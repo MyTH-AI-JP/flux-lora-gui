@@ -38,12 +38,12 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-dark-card p-6 rounded-lg shadow-md">
       {/* API Key Section */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-700">{t('apiSettings')}</h3>
+        <h3 className="text-lg font-semibold text-gray-700 dark:text-dark-text">{t('apiSettings')}</h3>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text mb-2">
             {t('apiKeyLabel')}
           </label>
           <div className="relative">
@@ -51,7 +51,8 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
               type={showApiKey ? "text" : "password"}
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border border-gray-300 dark:border-dark-border rounded-md shadow-sm 
+                focus:ring-blue-500 focus:border-blue-500 dark:bg-dark-bg dark:text-dark-text"
               placeholder={t('apiKeyPlaceholder')}
               required
             />
@@ -77,15 +78,16 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
 
       {/* Prompt Section */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-700">{t('basicSettings')}</h3>
+        <h3 className="text-lg font-semibold text-gray-700 dark:text-dark-text">{t('basicSettings')}</h3>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text mb-2">
             {t('prompt')}
           </label>
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 border border-gray-300 dark:border-dark-border rounded-md shadow-sm 
+              focus:ring-blue-500 focus:border-blue-500 dark:bg-dark-bg dark:text-dark-text"
             rows={4}
             placeholder={t('promptPlaceholder')}
             required
@@ -93,13 +95,14 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text mb-2">
             {t('imageSize')}
           </label>
           <select
             value={imageSize}
             onChange={(e) => setImageSize(e.target.value as ImageSizeType)}
-            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 border border-gray-300 dark:border-dark-border rounded-md shadow-sm 
+              focus:ring-blue-500 focus:border-blue-500 dark:bg-dark-bg dark:text-dark-text"
           >
             <option value="square_hd">Square HD (1024x1024)</option>
             <option value="square">Square (512x512)</option>
@@ -112,12 +115,12 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
       </div>
 
       {/* Advanced Settings Section */}
-      <div className="space-y-4 pt-4 border-t border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-700">{t('advancedSettings')}</h3>
+      <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-dark-border">
+        <h3 className="text-lg font-semibold text-gray-700 dark:text-dark-text">{t('advancedSettings')}</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-text mb-2">
               {t('inferenceSteps')}: {numSteps}
             </label>
             <input
@@ -126,9 +129,9 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
               max="50"
               value={numSteps}
               onChange={(e) => setNumSteps(Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
             />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
               <span>1</span>
               <span>25</span>
               <span>50</span>
@@ -136,7 +139,7 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-dark-text mb-2">
               {t('guidanceScale')}: {guidanceScale}
             </label>
             <input
@@ -146,9 +149,9 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
               step="0.1"
               value={guidanceScale}
               onChange={(e) => setGuidanceScale(Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
             />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
               <span>1</span>
               <span>10</span>
               <span>20</span>
@@ -158,25 +161,26 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
       </div>
 
       {/* LoRA Settings Section */}
-      <div className="space-y-4 pt-4 border-t border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-700">{t('loraSettings')}</h3>
+      <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-dark-border">
+        <h3 className="text-lg font-semibold text-gray-700 dark:text-dark-text">{t('loraSettings')}</h3>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text mb-2">
             {t('loraUrl')}
           </label>
           <input
             type="text"
             value={loraUrl}
             onChange={(e) => setLoraUrl(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 border border-gray-300 dark:border-dark-border rounded-md shadow-sm 
+              focus:ring-blue-500 focus:border-blue-500 dark:bg-dark-bg dark:text-dark-text"
             placeholder={t('loraUrlPlaceholder')}
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text mb-2">
             {t('loraScale')}: {loraScale}
           </label>
           <input
@@ -186,9 +190,9 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
             step="0.1"
             value={loraScale}
             onChange={(e) => setLoraScale(Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
           />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
             <span>0</span>
             <span>1</span>
             <span>2</span>
@@ -198,10 +202,10 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
       </div>
 
       {/* Generation Settings Section */}
-      <div className="space-y-4 pt-4 border-t border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-700">{t('generationSettings')}</h3>
+      <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-dark-border">
+        <h3 className="text-lg font-semibold text-gray-700 dark:text-dark-text">{t('generationSettings')}</h3>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-dark-text mb-2">
             {t('numImages')}: {numImages}
           </label>
           <input
@@ -210,9 +214,9 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
             max="4"
             value={numImages}
             onChange={(e) => setNumImages(Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
           />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
             <span>1</span>
             <span>2</span>
             <span>3</span>
@@ -226,8 +230,8 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
         disabled={isLoading}
         className={`w-full py-3 px-4 rounded-md shadow-sm text-sm font-medium text-white transition-colors duration-200 ${
           isLoading
-            ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+            ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'
+            : 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
         }`}
       >
         {isLoading ? (

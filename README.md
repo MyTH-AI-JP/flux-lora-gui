@@ -5,6 +5,11 @@ A minimal and alternative GUI for [fal.ai/flux-lora](https://fal.ai/models/flux-
 ## Preview - Yes, it's uncensored
 ![image](https://github.com/user-attachments/assets/947b7f56-c706-42a9-9d01-0982fb5ecd3e)
 
+<div align="center">
+  <a href="https://flux-uncensored.myth-ai.one/" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/Try%20It%20Now-FLUX.1%20Image%20Generator-blue?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xMiAydjIwbTAtMTBsLTYgNm02LTZsNiA2Ii8+PC9zdmc+" alt="Try FLUX.1 Image Generator" />
+  </a>
+</div>
 
 ## Features
 

@@ -53,7 +53,8 @@ export const translations = {
       description: 'FLUX.1 画像生成は、fal.ai/flux-loraのための代替GUIです。検閲を無効化し、LoRAモデルを使用した画像生成を可能にします。',
       siteName: 'MyTH株式会社',
       locale: 'ja-JP'
-    }
+    },
+    themeToggle: 'ダークモード切り替え',
   },
   en: {
     title: 'FLUX.1 Image Generator',
@@ -91,7 +92,8 @@ export const translations = {
       description: 'FLUX.1 Image Generator is an alternative GUI for fal.ai/flux-lora, enabling image generation with LoRA models and disabled censorship.',
       siteName: 'MyTH Inc.',
       locale: 'en-US'
-    }
+    },
+    themeToggle: 'Toggle dark mode',
   },
   fr: {
     title: 'FLUX.1 Générateur d\'Images',
@@ -129,7 +131,8 @@ export const translations = {
       description: 'FLUX.1 Générateur d\'Images est une interface alternative pour fal.ai/flux-lora, permettant la génération d\'images avec les modèles LoRA et la censure désactivée.',
       siteName: 'MyTH Inc.',
       locale: 'fr-FR'
-    }
+    },
+    themeToggle: 'Basculer le mode sombre',
   },
   es: {
     title: 'FLUX.1 Generador de Imágenes',
@@ -167,7 +170,8 @@ export const translations = {
       description: 'FLUX.1 Generador de Imágenes es una interfaz alternativa para fal.ai/flux-lora, que permite la generación de imágenes con modelos LoRA y censura desactivada.',
       siteName: 'MyTH Inc.',
       locale: 'es-ES'
-    }
+    },
+    themeToggle: 'Cambiar modo oscuro',
   },
   'zh-Hant': {
     title: 'FLUX.1 圖像生成器',
@@ -205,7 +209,8 @@ export const translations = {
       description: 'FLUX.1 圖像生成器是 fal.ai/flux-lora 的替代界面，支援使用 LoRA 模型生成圖像，並已停用審查功能。',
       siteName: 'MyTH股份有限公司',
       locale: 'zh-TW'
-    }
+    },
+    themeToggle: '切換深色模式',
   },
   ko: {
     title: 'FLUX.1 이미지 생성기',
@@ -243,7 +248,8 @@ export const translations = {
       description: 'FLUX.1 이미지 생성기는 fal.ai/flux-lora를 위한 대체 GUI로, LoRA 모델을 사용한 이미지 생성과 검열 해제를 지원합니다.',
       siteName: 'MyTH 주식회사',
       locale: 'ko-KR'
-    }
+    },
+    themeToggle: '다크 모드 전환',
   },
   it: {
     title: 'FLUX.1 Generatore di Immagini',
@@ -281,7 +287,8 @@ export const translations = {
       description: 'FLUX.1 Generatore di Immagini è un\'interfaccia alternativa per fal.ai/flux-lora, che consente la generazione di immagini con modelli LoRA e censura disattivata.',
       siteName: 'MyTH Inc.',
       locale: 'it-IT'
-    }
+    },
+    themeToggle: 'Attiva/disattiva modalità scura',
   },
   de: {
     title: 'FLUX.1 Bildgenerator',
@@ -319,7 +326,8 @@ export const translations = {
       description: 'FLUX.1 Bildgenerator ist eine alternative Benutzeroberfläche für fal.ai/flux-lora, die Bilderzeugung mit LoRA-Modellen und deaktivierter Zensur ermöglicht.',
       siteName: 'MyTH Inc.',
       locale: 'de-DE'
-    }
+    },
+    themeToggle: 'Dunkelmodus umschalten',
   },
   ar: {
     title: 'FLUX.1 مولد الصور',
@@ -357,7 +365,8 @@ export const translations = {
       description: 'FLUX.1 مولد الصور هو واجهة بديلة لـ fal.ai/flux-lora، يتيح إنشاء الصور باستخدام نماذج LoRA مع تعطيل الرقابة.',
       siteName: 'MyTH Inc.',
       locale: 'ar-SA'
-    }
+    },
+    themeToggle: 'تبديل الوضع المظلم',
   },
   he: {
     title: 'FLUX.1 מחולל תמונות',
@@ -395,7 +404,8 @@ export const translations = {
       description: 'FLUX.1 מחולל תמונות הוא ממשק חלופי עבור fal.ai/flux-lora, המאפשר יצירת תמונות עם מודלי LoRA וביטול צנזורה.',
       siteName: 'MyTH Inc.',
       locale: 'he-IL'
-    }
+    },
+    themeToggle: 'החלף מצב כהה',
   },
   hi: {
     title: 'FLUX.1 छवि जनरेटर',
@@ -433,7 +443,8 @@ export const translations = {
       description: 'FLUX.1 छवि जनरेटर fal.ai/flux-lora के लिए एक वैकल्पिक GUI है, जो LoRA मॉडल के साथ छवि निर्माण और सेंसरशिप को निष्क्रिय करने की सुविधा प्रदान करता है।',
       siteName: 'MyTH Inc.',
       locale: 'hi-IN'
-    }
+    },
+    themeToggle: 'डार्क मोड टॉगल करें',
   },
   pt: {
     title: 'FLUX.1 Gerador de Imagens',
@@ -471,7 +482,8 @@ export const translations = {
       description: 'FLUX.1 Gerador de Imagens é uma interface alternativa para fal.ai/flux-lora, permitindo a geração de imagens com modelos LoRA e censura desativada.',
       siteName: 'MyTH Inc.',
       locale: 'pt-BR'
-    }
+    },
+    themeToggle: 'Alternar modo escuro',
   },
   sw: {
     title: 'FLUX.1 Kizalishaji Picha',
@@ -509,8 +521,9 @@ export const translations = {
       description: 'FLUX.1 Kizalishaji Picha ni kiolesura mbadala cha fal.ai/flux-lora, kinachowezesha uzalishaji wa picha kwa kutumia modeli za LoRA na udhibiti uliozimwa.',
       siteName: 'MyTH Inc.',
       locale: 'sw-KE'
-    }
+    },
+    themeToggle: 'Badili hali ya giza',
   }
 } as const;
 
-export type TranslationKey = keyof typeof translations.ja; 
+export type TranslationKey = keyof typeof translations.ja;

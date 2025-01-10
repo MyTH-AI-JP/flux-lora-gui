@@ -4,6 +4,7 @@ import { ImageGenerator } from '../components/ImageGenerator';
 import React, { useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { LanguageSelector } from '../components/LanguageSelector';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 export default function Home() {
   const { t } = useLanguage();
@@ -18,7 +19,10 @@ export default function Home() {
         <h1 className="text-4xl font-bold text-center">
           {t('title')}
         </h1>
-        <LanguageSelector />
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <LanguageSelector />
+        </div>
       </div>
       <ImageGenerator />
     </main>

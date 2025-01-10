@@ -6,6 +6,7 @@ import { translations } from '../translations';
 import { Footer } from '../components/Footer';
 import clsx from 'clsx';
 import { Metadata } from 'next';
+import { ThemeProvider } from '../contexts/ThemeContext';
 
 const notoSerifJP = Noto_Serif_JP({
   subsets: ['latin'],
@@ -84,15 +85,20 @@ export default function RootLayout({
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         />
       </head>
-      <body className={clsx(notoSerifJP.className)} suppressHydrationWarning>
-        <LanguageProvider>
-          <div className="min-h-screen flex flex-col">
-            <div className="flex-grow">
-              {children}
+      <body className={clsx(
+        notoSerifJP.className,
+        'bg-white dark:bg-dark-bg text-gray-900 dark:text-dark-text'
+      )} suppressHydrationWarning>
+        <ThemeProvider>
+          <LanguageProvider>
+            <div className="min-h-screen flex flex-col">
+              <div className="flex-grow">
+                {children}
+              </div>
+              <Footer />
             </div>
-            <Footer />
-          </div>
-        </LanguageProvider>
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

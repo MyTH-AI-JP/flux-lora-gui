@@ -7,14 +7,14 @@ export function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="mt-8 py-4 border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-600">
+    <footer className="w-full py-4 border-t border-gray-200 dark:border-dark-border bg-white dark:bg-dark-card">
+      <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-600 dark:text-dark-text">
         <div>
           <a 
             href="https://www.myth-ai.one" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="hover:text-gray-900 transition-colors"
+            className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
           >
             {t('footer.copyright')}
           </a>
@@ -24,7 +24,7 @@ export function Footer() {
             href="https://www.myth-ai.one/privacy_policy" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="hover:text-gray-900 transition-colors"
+            className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
           >
             {t('footer.privacyPolicy')}
           </a>

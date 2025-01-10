@@ -80,7 +80,8 @@ export function ImageGenerator() {
         {/* Results Panel */}
         <div className="lg:w-1/2 space-y-8">
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
+              text-red-700 dark:text-red-400 rounded-lg">
               <div className="flex">
                 <svg className="h-5 w-5 text-red-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
@@ -91,25 +92,25 @@ export function ImageGenerator() {
           )}
 
           {!error && !generatedImages.length && !isLoading && (
-            <div className="h-full flex items-center justify-center bg-white p-8 rounded-lg shadow-md">
-              <p className="text-gray-500 text-center">
+            <div className="h-full flex items-center justify-center bg-white dark:bg-dark-card p-8 rounded-lg shadow-md">
+              <p className="text-gray-500 dark:text-gray-400 text-center">
                 {t('waitingMessage')}
               </p>
             </div>
           )}
 
           {isLoading && (
-            <div className="h-full flex items-center justify-center bg-white p-8 rounded-lg shadow-md">
+            <div className="h-full flex items-center justify-center bg-white dark:bg-dark-card p-8 rounded-lg shadow-md">
               <div className="text-center">
                 <div className="animate-spin inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mb-4"></div>
-                <p className="text-gray-600">{t('loadingMessage')}</p>
+                <p className="text-gray-600 dark:text-gray-400">{t('loadingMessage')}</p>
               </div>
             </div>
           )}
 
           {generatedImages.length > 0 && !isLoading && (
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">{t('generatedImages')}</h2>
+            <div className="bg-white dark:bg-dark-card p-6 rounded-lg shadow-md">
+              <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-dark-text">{t('generatedImages')}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {generatedImages.map((imageUrl, index) => (
                   <div key={index} className="relative">
