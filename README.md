@@ -2,6 +2,10 @@
 
 A minimal and alternative GUI for [fal.ai/flux-lora](https://fal.ai/models/flux-lora) image generation model, with censorship disabled. This project provides a clean interface for generating images using the Flux model with LoRA support.
 
+## Preview - Yes, it's uncensored
+![image](https://github.com/user-attachments/assets/947b7f56-c706-42a9-9d01-0982fb5ecd3e)
+
+
 ## Features
 
 - 🎨 Clean, intuitive interface for image generation
