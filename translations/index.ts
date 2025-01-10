@@ -1,4 +1,4 @@
-export type Language = 'ja' | 'en' | 'fr' | 'es' | 'zh-Hant' | 'ko' | 'it' | 'de' | 'ar' | 'he' | 'hi';
+export type Language = 'ja' | 'en' | 'fr' | 'es' | 'zh-Hant' | 'ko' | 'it' | 'de' | 'ar' | 'he' | 'hi' | 'pt' | 'sw';
 
 export const languages = {
   ja: '日本語',
@@ -11,7 +11,9 @@ export const languages = {
   de: 'Deutsch',
   ar: 'العربية',
   he: 'עברית',
-  hi: 'हिन्दी'
+  hi: 'हिन्दी',
+  pt: 'Português',
+  sw: 'Kiswahili'
 } as const;
 
 export const translations = {
@@ -42,7 +44,16 @@ export const translations = {
     loadingMessage: '画像を生成中...',
     error: 'エラーが発生しました',
     showPassword: 'パスワードを表示',
-    hidePassword: 'パスワードを非表示'
+    hidePassword: 'パスワードを非表示',
+    footer: {
+      copyright: '© 2025 MyTH株式会社 All Rights Reserved.',
+      privacyPolicy: 'プライバシーポリシー'
+    },
+    meta: {
+      description: 'FLUX.1 画像生成は、fal.ai/flux-loraのための代替GUIです。検閲を無効化し、LoRAモデルを使用した画像生成を可能にします。',
+      siteName: 'MyTH株式会社',
+      locale: 'ja-JP'
+    }
   },
   en: {
     title: 'FLUX.1 Image Generator',
@@ -71,7 +82,16 @@ export const translations = {
     loadingMessage: 'Generating images...',
     error: 'An error occurred',
     showPassword: 'Show Password',
-    hidePassword: 'Hide Password'
+    hidePassword: 'Hide Password',
+    footer: {
+      copyright: '© 2025 MyTH Inc. All Rights Reserved.',
+      privacyPolicy: 'Privacy Policy'
+    },
+    meta: {
+      description: 'FLUX.1 Image Generator is an alternative GUI for fal.ai/flux-lora, enabling image generation with LoRA models and disabled censorship.',
+      siteName: 'MyTH Inc.',
+      locale: 'en-US'
+    }
   },
   fr: {
     title: 'FLUX.1 Générateur d\'Images',
@@ -100,7 +120,16 @@ export const translations = {
     loadingMessage: 'Génération d\'images en cours...',
     error: 'Une erreur est survenue',
     showPassword: 'Afficher le Mot de Passe',
-    hidePassword: 'Masquer le Mot de Passe'
+    hidePassword: 'Masquer le Mot de Passe',
+    footer: {
+      copyright: '© 2025 MyTH Inc. Tous droits réservés.',
+      privacyPolicy: 'Politique de confidentialité'
+    },
+    meta: {
+      description: 'FLUX.1 Générateur d\'Images est une interface alternative pour fal.ai/flux-lora, permettant la génération d\'images avec les modèles LoRA et la censure désactivée.',
+      siteName: 'MyTH Inc.',
+      locale: 'fr-FR'
+    }
   },
   es: {
     title: 'FLUX.1 Generador de Imágenes',
@@ -129,7 +158,16 @@ export const translations = {
     loadingMessage: 'Generando imágenes...',
     error: 'Ha ocurrido un error',
     showPassword: 'Mostrar Contraseña',
-    hidePassword: 'Ocultar Contraseña'
+    hidePassword: 'Ocultar Contraseña',
+    footer: {
+      copyright: '© 2025 MyTH Inc. Todos los derechos reservados.',
+      privacyPolicy: 'Política de privacidad'
+    },
+    meta: {
+      description: 'FLUX.1 Generador de Imágenes es una interfaz alternativa para fal.ai/flux-lora, que permite la generación de imágenes con modelos LoRA y censura desactivada.',
+      siteName: 'MyTH Inc.',
+      locale: 'es-ES'
+    }
   },
   'zh-Hant': {
     title: 'FLUX.1 圖像生成器',
@@ -158,7 +196,16 @@ export const translations = {
     loadingMessage: '正在生成圖像...',
     error: '發生錯誤',
     showPassword: '顯示密碼',
-    hidePassword: '隱藏密碼'
+    hidePassword: '隱藏密碼',
+    footer: {
+      copyright: '© 2025 MyTH股份有限公司 版權所有.',
+      privacyPolicy: '隱私權政策'
+    },
+    meta: {
+      description: 'FLUX.1 圖像生成器是 fal.ai/flux-lora 的替代界面，支援使用 LoRA 模型生成圖像，並已停用審查功能。',
+      siteName: 'MyTH股份有限公司',
+      locale: 'zh-TW'
+    }
   },
   ko: {
     title: 'FLUX.1 이미지 생성기',
@@ -187,7 +234,16 @@ export const translations = {
     loadingMessage: '이미지 생성 중...',
     error: '오류가 발생했습니다',
     showPassword: '비밀번호 표시',
-    hidePassword: '비밀번호 숨기기'
+    hidePassword: '비밀번호 숨기기',
+    footer: {
+      copyright: '© 2025 MyTH 주식회사 All Rights Reserved.',
+      privacyPolicy: '개인정보 처리방침'
+    },
+    meta: {
+      description: 'FLUX.1 이미지 생성기는 fal.ai/flux-lora를 위한 대체 GUI로, LoRA 모델을 사용한 이미지 생성과 검열 해제를 지원합니다.',
+      siteName: 'MyTH 주식회사',
+      locale: 'ko-KR'
+    }
   },
   it: {
     title: 'FLUX.1 Generatore di Immagini',
@@ -216,7 +272,16 @@ export const translations = {
     loadingMessage: 'Generazione immagini in corso...',
     error: 'Si è verificato un errore',
     showPassword: 'Mostra Password',
-    hidePassword: 'Nascondi Password'
+    hidePassword: 'Nascondi Password',
+    footer: {
+      copyright: '© 2025 MyTH Inc. Tutti i diritti riservati.',
+      privacyPolicy: 'Informativa sulla privacy'
+    },
+    meta: {
+      description: 'FLUX.1 Generatore di Immagini è un\'interfaccia alternativa per fal.ai/flux-lora, che consente la generazione di immagini con modelli LoRA e censura disattivata.',
+      siteName: 'MyTH Inc.',
+      locale: 'it-IT'
+    }
   },
   de: {
     title: 'FLUX.1 Bildgenerator',
@@ -245,7 +310,16 @@ export const translations = {
     loadingMessage: 'Bilder werden generiert...',
     error: 'Ein Fehler ist aufgetreten',
     showPassword: 'Passwort anzeigen',
-    hidePassword: 'Passwort verbergen'
+    hidePassword: 'Passwort verbergen',
+    footer: {
+      copyright: '© 2025 MyTH Inc. Alle Rechte vorbehalten.',
+      privacyPolicy: 'Datenschutzerklärung'
+    },
+    meta: {
+      description: 'FLUX.1 Bildgenerator ist eine alternative Benutzeroberfläche für fal.ai/flux-lora, die Bilderzeugung mit LoRA-Modellen und deaktivierter Zensur ermöglicht.',
+      siteName: 'MyTH Inc.',
+      locale: 'de-DE'
+    }
   },
   ar: {
     title: 'FLUX.1 مولد الصور',
@@ -274,7 +348,16 @@ export const translations = {
     loadingMessage: 'جاري توليد الصور...',
     error: 'حدث خطأ',
     showPassword: 'إظهار كلمة المرور',
-    hidePassword: 'إخفاء كلمة المرور'
+    hidePassword: 'إخفاء كلمة المرور',
+    footer: {
+      copyright: '© 2025 MyTH Inc. جميع الحقوق محفوظة.',
+      privacyPolicy: 'سياسة الخصوصية'
+    },
+    meta: {
+      description: 'FLUX.1 مولد الصور هو واجهة بديلة لـ fal.ai/flux-lora، يتيح إنشاء الصور باستخدام نماذج LoRA مع تعطيل الرقابة.',
+      siteName: 'MyTH Inc.',
+      locale: 'ar-SA'
+    }
   },
   he: {
     title: 'FLUX.1 מחולל תמונות',
@@ -303,7 +386,16 @@ export const translations = {
     loadingMessage: 'יוצר תמונות...',
     error: 'אירעה שגיאה',
     showPassword: 'הצג סיסמה',
-    hidePassword: 'הסתר סיסמה'
+    hidePassword: 'הסתר סיסמה',
+    footer: {
+      copyright: '© 2025 MyTH Inc. כל הזכויות שמורות.',
+      privacyPolicy: 'מדיניות פרטיות'
+    },
+    meta: {
+      description: 'FLUX.1 מחולל תמונות הוא ממשק חלופי עבור fal.ai/flux-lora, המאפשר יצירת תמונות עם מודלי LoRA וביטול צנזורה.',
+      siteName: 'MyTH Inc.',
+      locale: 'he-IL'
+    }
   },
   hi: {
     title: 'FLUX.1 छवि जनरेटर',
@@ -332,7 +424,92 @@ export const translations = {
     loadingMessage: 'छवियां बन रही हैं...',
     error: 'एक त्रुटि हुई',
     showPassword: 'पासवर्ड दिखाएं',
-    hidePassword: 'पासवर्ड छिपाएं'
+    hidePassword: 'पासवर्ड छिपाएं',
+    footer: {
+      copyright: '© 2025 MyTH Inc. सर्वाधिकार सुरक्षित.',
+      privacyPolicy: 'गोपनीयता नीति'
+    },
+    meta: {
+      description: 'FLUX.1 छवि जनरेटर fal.ai/flux-lora के लिए एक वैकल्पिक GUI है, जो LoRA मॉडल के साथ छवि निर्माण और सेंसरशिप को निष्क्रिय करने की सुविधा प्रदान करता है।',
+      siteName: 'MyTH Inc.',
+      locale: 'hi-IN'
+    }
+  },
+  pt: {
+    title: 'FLUX.1 Gerador de Imagens',
+    companyName: 'MyTH Inc.',
+    apiSettings: 'Configurações da API',
+    apiKeyLabel: 'Chave API FAL',
+    apiKeyPlaceholder: 'Digite sua chave API fal.ai',
+    basicSettings: 'Configurações Básicas',
+    prompt: 'Prompt',
+    promptPlaceholder: 'Digite a descrição da imagem...',
+    imageSize: 'Tamanho da Imagem',
+    advancedSettings: 'Configurações Avançadas',
+    inferenceSteps: 'Passos de Inferência',
+    guidanceScale: 'Escala de Orientação',
+    loraSettings: 'Configurações LoRA',
+    loraUrl: 'URL LoRA',
+    loraUrlPlaceholder: 'Digite a URL do LoRA',
+    loraScale: 'Escala LoRA',
+    generationSettings: 'Configurações de Geração',
+    numImages: 'Número de Imagens',
+    generate: 'Gerar Imagens',
+    generating: 'Gerando...',
+    generatedImages: 'Imagens Geradas',
+    download: 'Baixar Imagem',
+    waitingMessage: 'Ajuste as configurações e gere imagens',
+    loadingMessage: 'Gerando imagens...',
+    error: 'Ocorreu um erro',
+    showPassword: 'Mostrar Senha',
+    hidePassword: 'Ocultar Senha',
+    footer: {
+      copyright: '© 2025 MyTH Inc. Todos os direitos reservados.',
+      privacyPolicy: 'Política de Privacidade'
+    },
+    meta: {
+      description: 'FLUX.1 Gerador de Imagens é uma interface alternativa para fal.ai/flux-lora, permitindo a geração de imagens com modelos LoRA e censura desativada.',
+      siteName: 'MyTH Inc.',
+      locale: 'pt-BR'
+    }
+  },
+  sw: {
+    title: 'FLUX.1 Kizalishaji Picha',
+    companyName: 'MyTH Inc.',
+    apiSettings: 'Mipangilio ya API',
+    apiKeyLabel: 'Ufunguo wa API ya FAL',
+    apiKeyPlaceholder: 'Ingiza ufunguo wako wa API ya fal.ai',
+    basicSettings: 'Mipangilio ya Msingi',
+    prompt: 'Maelekezo',
+    promptPlaceholder: 'Ingiza maelezo ya picha...',
+    imageSize: 'Ukubwa wa Picha',
+    advancedSettings: 'Mipangilio ya Kina',
+    inferenceSteps: 'Hatua za Inference',
+    guidanceScale: 'Kiwango cha Mwongozo',
+    loraSettings: 'Mipangilio ya LoRA',
+    loraUrl: 'URL ya LoRA',
+    loraUrlPlaceholder: 'Ingiza URL ya LoRA',
+    loraScale: 'Kiwango cha LoRA',
+    generationSettings: 'Mipangilio ya Uzalishaji',
+    numImages: 'Idadi ya Picha',
+    generate: 'Zalisha Picha',
+    generating: 'Inazalisha...',
+    generatedImages: 'Picha Zilizozalishwa',
+    download: 'Pakua Picha',
+    waitingMessage: 'Rekebisha mipangilio na uzalishe picha',
+    loadingMessage: 'Inazalisha picha...',
+    error: 'Hitilafu imetokea',
+    showPassword: 'Onyesha Nenosiri',
+    hidePassword: 'Ficha Nenosiri',
+    footer: {
+      copyright: '© 2025 MyTH Inc. Haki zote zimehifadhiwa.',
+      privacyPolicy: 'Sera ya Faragha'
+    },
+    meta: {
+      description: 'FLUX.1 Kizalishaji Picha ni kiolesura mbadala cha fal.ai/flux-lora, kinachowezesha uzalishaji wa picha kwa kutumia modeli za LoRA na udhibiti uliozimwa.',
+      siteName: 'MyTH Inc.',
+      locale: 'sw-KE'
+    }
   }
 } as const;
 
