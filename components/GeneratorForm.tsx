@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useState } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export type ImageSizeType = 'square_hd' | 'square' | 'portrait_4_3' | 'portrait_16_9' | 'landscape_4_3' | 'landscape_16_9';
 
@@ -20,6 +21,7 @@ interface GeneratorFormProps {
 }
 
 export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
+  const { t } = useLanguage();
   const [prompt, setPrompt] = useState('');
   const [imageSize, setImageSize] = useState<ImageSizeType>('landscape_4_3');
   const [numSteps, setNumSteps] = useState(28);
@@ -37,12 +39,12 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
-      {/* API Key Section - 最初に配置 */}
+      {/* API Key Section */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-700">API設定</h3>
+        <h3 className="text-lg font-semibold text-gray-700">{t('apiSettings')}</h3>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            FAL API Key
+            {t('apiKeyLabel')}
           </label>
           <div className="relative">
             <input
@@ -50,7 +52,7 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder="fal.ai のAPI Keyを入力してください"
+              placeholder={t('apiKeyPlaceholder')}
               required
             />
             <button
@@ -75,24 +77,24 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
 
       {/* Prompt Section */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-700">基本設定</h3>
+        <h3 className="text-lg font-semibold text-gray-700">{t('basicSettings')}</h3>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            プロンプト
+            {t('prompt')}
           </label>
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             rows={4}
-            placeholder="画像の説明を入力してください..."
+            placeholder={t('promptPlaceholder')}
             required
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            画像サイズ
+            {t('imageSize')}
           </label>
           <select
             value={imageSize}
@@ -111,12 +113,12 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
 
       {/* Advanced Settings Section */}
       <div className="space-y-4 pt-4 border-t border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-700">詳細設定</h3>
+        <h3 className="text-lg font-semibold text-gray-700">{t('advancedSettings')}</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              推論ステップ数: {numSteps}
+              {t('inferenceSteps')}: {numSteps}
             </label>
             <input
               type="range"
@@ -135,7 +137,7 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              ガイダンススケール: {guidanceScale}
+              {t('guidanceScale')}: {guidanceScale}
             </label>
             <input
               type="range"
@@ -157,25 +159,25 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
 
       {/* LoRA Settings Section */}
       <div className="space-y-4 pt-4 border-t border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-700">LoRA設定</h3>
+        <h3 className="text-lg font-semibold text-gray-700">{t('loraSettings')}</h3>
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            LoRA URL
+            {t('loraUrl')}
           </label>
           <input
             type="text"
             value={loraUrl}
             onChange={(e) => setLoraUrl(e.target.value)}
             className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            placeholder="LoRAのURLを入力してください"
+            placeholder={t('loraUrlPlaceholder')}
             required
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            LoRAスケール: {loraScale}
+            {t('loraScale')}: {loraScale}
           </label>
           <input
             type="range"
@@ -195,11 +197,12 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
         </div>
       </div>
 
+      {/* Generation Settings Section */}
       <div className="space-y-4 pt-4 border-t border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-700">生成設定</h3>
+        <h3 className="text-lg font-semibold text-gray-700">{t('generationSettings')}</h3>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            生成数: {numImages}
+            {t('numImages')}: {numImages}
           </label>
           <input
             type="range"
@@ -233,10 +236,10 @@ export function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            生成中...
+            {t('generating')}
           </span>
         ) : (
-          '画像を生成'
+          t('generate')
         )}
       </button>
     </form>

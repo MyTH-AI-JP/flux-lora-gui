@@ -11,7 +11,8 @@
     "@fal-ai/client": "^1.2.1",
     "next": "^15.1.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "translations": "^2.2.1"
   },
   "scripts": {
     "dev": "next dev",

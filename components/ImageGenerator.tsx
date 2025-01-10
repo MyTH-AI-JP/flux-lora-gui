@@ -5,6 +5,7 @@ import { fal } from '@fal-ai/client';
 import { ImageSizeType, GeneratorForm } from './GeneratorForm';
 import React from 'react';
 import { ImageModal } from './ImageModal';
+import { useLanguage } from '../contexts/LanguageContext';
 
 fal.config({
   credentials: process.env.NEXT_PUBLIC_FAL_KEY
@@ -15,6 +16,7 @@ export function ImageGenerator() {
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   const generateImage = async (
     prompt: string,
@@ -83,7 +85,7 @@ export function ImageGenerator() {
                 <svg className="h-5 w-5 text-red-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
                 </svg>
-                {error}
+                {t('error')}
               </div>
             </div>
           )}
@@ -91,7 +93,7 @@ export function ImageGenerator() {
           {!error && !generatedImages.length && !isLoading && (
             <div className="h-full flex items-center justify-center bg-white p-8 rounded-lg shadow-md">
               <p className="text-gray-500 text-center">
-                設定を調整して画像を生成してください
+                {t('waitingMessage')}
               </p>
             </div>
           )}
@@ -100,14 +102,14 @@ export function ImageGenerator() {
             <div className="h-full flex items-center justify-center bg-white p-8 rounded-lg shadow-md">
               <div className="text-center">
                 <div className="animate-spin inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mb-4"></div>
-                <p className="text-gray-600">画像を生成中...</p>
+                <p className="text-gray-600">{t('loadingMessage')}</p>
               </div>
             </div>
           )}
 
           {generatedImages.length > 0 && !isLoading && (
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">生成された画像</h2>
+              <h2 className="text-xl font-bold mb-4 text-gray-800">{t('generatedImages')}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {generatedImages.map((imageUrl, index) => (
                   <div key={index} className="relative">
@@ -140,7 +142,6 @@ export function ImageGenerator() {
                               const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
                               const url = window.URL.createObjectURL(blob);
                               
-                              // Download処理
                               const a = document.createElement('a');
                               a.style.display = 'none';
                               a.href = url;
@@ -148,7 +149,6 @@ export function ImageGenerator() {
                               document.body.appendChild(a);
                               a.click();
                               
-                              // クリーンアップ
                               setTimeout(() => {
                                 document.body.removeChild(a);
                                 window.URL.revokeObjectURL(url);
@@ -164,7 +164,7 @@ export function ImageGenerator() {
                         <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
-                        画像をダウンロード
+                        {t('download')}
                       </a>
                     </div>
                   </div>
@@ -175,7 +175,6 @@ export function ImageGenerator() {
         </div>
       </div>
 
-      {/* Modal */}
       {selectedImage && (
         <ImageModal
           imageUrl={selectedImage}
