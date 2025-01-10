@@ -5,6 +5,18 @@ A minimal and alternative GUI for [fal.ai/flux-lora](https://fal.ai/models/flux-
 ## Features
 
 - 🎨 Clean, intuitive interface for image generation
+- 🔧 Multilingual support (11 languages):
+  - 日本語 (Japanese) - Default
+  - English
+  - Français (French)
+  - Español (Spanish)
+  - 繁體中文 (Traditional Chinese)
+  - 한국어 (Korean)
+  - Italiano (Italian)
+  - Deutsch (German)
+  - العربية (Arabic)
+  - עברית (Hebrew)
+  - हिन्दी (Hindi)
 - 🔧 Full control over generation parameters
 - 📦 Support for custom LoRA models
 - 🖼️ Generate multiple images at once (1-4 images)
