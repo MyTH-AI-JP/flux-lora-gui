@@ -1,0 +1,355 @@
+"use client"
+
+import { memo, useEffect, useLayoutEffect, useMemo, useState, useCallback } from "react"
+import {
+  AnimatePresence,
+  motion,
+  useAnimation,
+  useMotionValue,
+  useTransform,
+} from "framer-motion"
+
+export const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect
+
+type UseMediaQueryOptions = {
+  defaultValue?: boolean
+  initializeWithValue?: boolean
+}
+
+const IS_SERVER = typeof window === "undefined"
+
+export function useMediaQuery(
+  query: string,
+  {
+    defaultValue = false,
+    initializeWithValue = true,
+  }: UseMediaQueryOptions = {}
+): boolean {
+  const getMatches = (query: string): boolean => {
+    if (IS_SERVER) {
+      return defaultValue
+    }
+    return window.matchMedia(query).matches
+  }
+
+  const [matches, setMatches] = useState<boolean>(() => {
+    if (initializeWithValue) {
+      return getMatches(query)
+    }
+    return defaultValue
+  })
+
+  const handleChange = () => {
+    setMatches(getMatches(query))
+  }
+
+  useIsomorphicLayoutEffect(() => {
+    const matchMedia = window.matchMedia(query)
+    handleChange()
+
+    matchMedia.addEventListener("change", handleChange)
+
+    return () => {
+      matchMedia.removeEventListener("change", handleChange)
+    }
+  }, [query])
+
+  return matches
+}
+
+type Lora = {
+  id: string;
+  name: string;
+  imageUrl: string;
+  author?: string;
+  description?: string;
+}
+
+// サンプルLoraデータ
+const sampleLoras: Lora[] = [
+  {
+    id: "1",
+    name: "アニメスタイル",
+    imageUrl: "https://v3.fal.media/files/zebra/jCKae-M1MGClNffKuxVJl_pytorch_lora_weights.safetensors",
+    author: "アニメ作家",
+    description: "アニメ風のスタイルを適用するLora"
+  },
+  {
+    id: "2",
+    name: "水彩画風",
+    imageUrl: "https://picsum.photos/200/300?watercolor",
+    author: "水彩アーティスト",
+    description: "水彩画風のスタイルを適用するLora"
+  },
+  {
+    id: "3",
+    name: "モノクロ",
+    imageUrl: "https://picsum.photos/200/300?monochrome",
+    author: "モノクロアーティスト",
+    description: "モノクロスタイルを適用するLora"
+  },
+  {
+    id: "4",
+    name: "ネオン",
+    imageUrl: "https://picsum.photos/200/300?neon",
+    author: "ネオンアーティスト",
+    description: "ネオン効果を適用するLora"
+  },
+  {
+    id: "5",
+    name: "レトロ",
+    imageUrl: "https://picsum.photos/200/300?retro",
+    author: "レトロアーティスト",
+    description: "レトロスタイルを適用するLora"
+  },
+  {
+    id: "6",
+    name: "ファンタジー",
+    imageUrl: "https://picsum.photos/200/300?fantasy",
+    author: "ファンタジーアーティスト",
+    description: "ファンタジースタイルを適用するLora"
+  },
+  {
+    id: "7",
+    name: "サイバーパンク",
+    imageUrl: "https://picsum.photos/200/300?cyberpunk",
+    author: "サイバーパンクアーティスト",
+    description: "サイバーパンクスタイルを適用するLora"
+  },
+  {
+    id: "8",
+    name: "和風",
+    imageUrl: "https://picsum.photos/200/300?japanese",
+    author: "和風アーティスト",
+    description: "和風スタイルを適用するLora"
+  }
+];
+
+const duration = 0.15
+const transition = { duration, ease: [0.32, 0.72, 0, 1], filter: "blur(4px)" }
+const transitionOverlay = { duration: 0.5, ease: [0.32, 0.72, 0, 1] }
+
+const Carousel = memo(
+  ({
+    handleClick,
+    controls,
+    cards,
+    isCarouselActive,
+  }: {
+    handleClick: (lora: Lora, index: number) => void
+    controls: any
+    cards: Lora[]
+    isCarouselActive: boolean
+  }) => {
+    const isScreenSizeSm = useMediaQuery("(max-width: 640px)")
+    const cylinderWidth = isScreenSizeSm ? 1100 : 1800
+    const faceCount = cards.length
+    const faceWidth = cylinderWidth / faceCount
+    const radius = cylinderWidth / (2 * Math.PI)
+    const rotation = useMotionValue(0)
+    const transform = useTransform(
+      rotation,
+      (value) => `rotate3d(0, 1, 0, ${value}deg)`
+    )
+
+    return (
+      <div
+        className="flex h-full items-center justify-center bg-transparent"
+        style={{
+          perspective: "1000px",
+          transformStyle: "preserve-3d",
+          willChange: "transform",
+        }}
+      >
+        <motion.div
+          drag={isCarouselActive ? "x" : false}
+          className="relative flex h-full origin-center cursor-grab justify-center active:cursor-grabbing"
+          style={{
+            transform,
+            rotateY: rotation,
+            width: cylinderWidth,
+            transformStyle: "preserve-3d",
+          }}
+          onDrag={(_, info) =>
+            isCarouselActive &&
+            rotation.set(rotation.get() + info.offset.x * 0.05)
+          }
+          onDragEnd={(_, info) =>
+            isCarouselActive &&
+            controls.start({
+              rotateY: rotation.get() + info.velocity.x * 0.05,
+              transition: {
+                type: "spring",
+                stiffness: 100,
+                damping: 30,
+                mass: 0.1,
+              },
+            })
+          }
+          animate={controls}
+        >
+          {cards.map((lora, i) => (
+            <motion.div
+              key={`key-${lora.id}-${i}`}
+              className="absolute flex h-full origin-center items-center justify-center rounded-xl overflow-hidden"
+              style={{
+                width: `${faceWidth}px`,
+                transform: `rotateY(${
+                  i * (360 / faceCount)
+                }deg) translateZ(${radius}px)`,
+              }}
+              onClick={() => handleClick(lora, i)}
+            >
+              <motion.img
+                src={lora.imageUrl}
+                alt={`${lora.name}`}
+                layoutId={`img-${lora.id}`}
+                className="w-full h-full object-cover transition-all duration-300 hover:scale-105 hover:opacity-100 cursor-pointer shadow-lg"
+                initial={{ filter: "blur(4px)" }}
+                animate={{ filter: "blur(0px)", opacity: 0.8 }}
+                transition={transition}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    )
+  }
+)
+
+function ThreeDPhotoCarousel() {
+  const [activeLora, setActiveLora] = useState<Lora | null>(null)
+  const [isCarouselActive, setIsCarouselActive] = useState(true)
+  const [autoRotate, setAutoRotate] = useState(true) 
+  const controls = useAnimation()
+  const cards = useMemo(() => sampleLoras, [])
+  const rotation = useMotionValue(0)
+
+  useEffect(() => {
+    console.log("Cards loaded:", cards)
+  }, [cards])
+
+  // 自動回転を処理する関数
+  const autoRotateCarousel = useCallback(() => {
+    if (autoRotate && isCarouselActive) {
+      controls.start({
+        rotateY: rotation.get() + 360,
+        transition: {
+          duration: 30,
+          ease: "linear",
+          repeat: Infinity,
+          repeatType: "loop" as const,
+        },
+      })
+    } else {
+      controls.stop()
+    }
+  }, [autoRotate, isCarouselActive, controls, rotation])
+
+  // 自動回転を開始/停止
+  useEffect(() => {
+    autoRotateCarousel()
+  }, [autoRotate, isCarouselActive, autoRotateCarousel])
+
+  const handleClick = (lora: Lora) => {
+    setActiveLora(lora)
+    setIsCarouselActive(false)
+    controls.stop()
+  }
+
+  const handleClose = () => {
+    setActiveLora(null)
+    setIsCarouselActive(true)
+    if (autoRotate) {
+      autoRotateCarousel()
+    }
+  }
+
+  return (
+    <motion.div layout className="relative">
+      <div className="flex justify-end mb-2">
+        <button 
+          onClick={() => setAutoRotate(!autoRotate)}
+          className="flex items-center text-sm bg-gray-800/70 hover:bg-gray-700/70 backdrop-blur-sm text-white px-3 py-1 rounded-full z-10"
+        >
+          <span className={`inline-block w-3 h-3 rounded-full mr-2 ${autoRotate ? 'bg-green-500' : 'bg-red-500'}`}></span>
+          {autoRotate ? '自動回転: ON' : '自動回転: OFF'}
+        </button>
+      </div>
+
+      <AnimatePresence mode="sync">
+        {activeLora && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
+            layoutId={`img-container-${activeLora.id}`}
+            layout="position"
+            onClick={handleClose}
+            className="fixed inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center z-50 p-6 md:p-12"
+            style={{ willChange: "opacity" }}
+            transition={transitionOverlay}
+          >
+            <div className="bg-gray-900/70 backdrop-blur-sm rounded-xl overflow-hidden max-w-4xl w-full shadow-2xl border border-gray-800/50">
+              <div className="relative">
+                <motion.img
+                  layoutId={`img-${activeLora.id}`}
+                  src={activeLora.imageUrl}
+                  className="w-full max-h-[60vh] object-contain"
+                  initial={{ scale: 0.5 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{
+                    delay: 0.3,
+                    duration: 0.4,
+                    ease: [0.25, 0.1, 0.25, 1],
+                  }}
+                  style={{
+                    willChange: "transform",
+                  }}
+                />
+                <button 
+                  className="absolute top-4 right-4 w-8 h-8 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleClose();
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="text-white p-6">
+                <h2 className="text-2xl font-bold mb-2">{activeLora.name}</h2>
+                {activeLora.author && <p className="text-gray-300 mb-2">作者: {activeLora.author}</p>}
+                {activeLora.description && <p className="text-gray-200 mb-4">{activeLora.description}</p>}
+                <div className="flex justify-end">
+                  <button 
+                    className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-md transition-colors duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Lora selected:", activeLora);
+                      handleClose();
+                    }}
+                  >
+                    このLoraを使用する
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="relative h-[500px] w-full overflow-hidden rounded-xl">
+        <Carousel
+          handleClick={handleClick}
+          controls={controls}
+          cards={cards}
+          isCarouselActive={isCarouselActive}
+        />
+      </div>
+    </motion.div>
+  )
+}
+
+export { ThreeDPhotoCarousel }; 

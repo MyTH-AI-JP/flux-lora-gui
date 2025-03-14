@@ -5,8 +5,9 @@ import { LanguageProvider } from '../contexts/LanguageContext';
 import { translations } from '../translations';
 import { Footer } from '../components/Footer';
 import clsx from 'clsx';
-import { Metadata } from 'next';
+import { Metadata, Viewport } from 'next';
 import { ThemeProvider } from '../contexts/ThemeContext';
+import { Squares } from '@/components/ui/squares-background';
 
 const notoSerifJP = Noto_Serif_JP({
   subsets: ['latin'],
@@ -48,10 +49,6 @@ export async function generateMetadata(): Promise<Metadata> {
         type: 'image/png',
       }],
     },
-    viewport: {
-      width: 'device-width',
-      initialScale: 1,
-    },
     alternates: {
       languages: {
         'ja-JP': '/ja',
@@ -72,6 +69,13 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+export function generateViewport(): Viewport {
+  return {
+    width: 'device-width',
+    initialScale: 1,
+  };
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -87,12 +91,25 @@ export default function RootLayout({
       </head>
       <body className={clsx(
         notoSerifJP.className,
-        'bg-white dark:bg-dark-bg text-gray-900 dark:text-dark-text'
+        'bg-[#060606] text-gray-200 dark:text-gray-100'
       )} suppressHydrationWarning>
         <ThemeProvider>
           <LanguageProvider>
-            <div className="min-h-screen flex flex-col">
-              <div className="flex-grow">
+            <div className="min-h-screen flex flex-col relative">
+              <div className="absolute inset-0 z-0">
+                <Squares 
+                  direction="diagonal"
+                  speed={0.3}
+                  squareSize={60}
+                  borderColor="#353535"
+                  gridColor="#252525" 
+                  accentColor="#6d28d9"
+                  hoverFillColor="rgba(79, 70, 229, 0.1)"
+                  dotSize={1.2}
+                  patternDensity={10}
+                />
+              </div>
+              <div className="flex-grow relative z-10">
                 {children}
               </div>
               <Footer />
