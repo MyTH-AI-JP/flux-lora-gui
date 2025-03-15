@@ -181,6 +181,15 @@ function ThreeDPhotoCarousel() {
             created_at: new Date().toISOString()
           },
           {
+            id: "asian-beauty",
+            name: "自然な美しさ",
+            image_url: "/images/asian-beauty.jpg",
+            author: "ポートレートアーティスト",
+            description: "自然な雰囲気と美しさを引き出すポートレートスタイル",
+            lora_url: "https://v3.fal.media/files/koala/nTFVc1MiTbCieg6-FibkM_pytorch_lora_weights.safetensors",
+            created_at: new Date().toISOString()
+          },
+          {
             id: "sakura-style",
             name: "桜スタイル",
             image_url: "/images/sakura.jpg",
