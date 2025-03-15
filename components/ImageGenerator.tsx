@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { fal } from '@fal-ai/client';
-import { ImageSizeType, GeneratorForm } from './GeneratorForm';
+import { GeneratorForm, ImageSizeType } from './GeneratorForm';
 import React from 'react';
 import { ImageModal } from './ImageModal';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -88,6 +88,7 @@ export function ImageGenerator() {
                 </svg>
                 {t('error')}
               </div>
+              <p>{error}</p>
             </div>
           )}
 

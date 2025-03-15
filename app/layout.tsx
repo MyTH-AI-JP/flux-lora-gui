@@ -7,6 +7,7 @@ import { Footer } from '../components/Footer';
 import clsx from 'clsx';
 import { Metadata, Viewport } from 'next';
 import { ThemeProvider } from '../contexts/ThemeContext';
+import { ApiProvider } from '../contexts/ApiContext';
 import { Squares } from '@/components/ui/squares-background';
 
 const notoSerifJP = Noto_Serif_JP({
@@ -95,25 +96,27 @@ export default function RootLayout({
       )} suppressHydrationWarning>
         <ThemeProvider>
           <LanguageProvider>
-            <div className="min-h-screen flex flex-col relative">
-              <div className="absolute inset-0 z-0">
-                <Squares 
-                  direction="diagonal"
-                  speed={0.3}
-                  squareSize={60}
-                  borderColor="#353535"
-                  gridColor="#252525" 
-                  accentColor="#6d28d9"
-                  hoverFillColor="rgba(79, 70, 229, 0.1)"
-                  dotSize={1.2}
-                  patternDensity={10}
-                />
+            <ApiProvider>
+              <div className="min-h-screen flex flex-col relative">
+                <div className="absolute inset-0 z-0">
+                  <Squares 
+                    direction="diagonal"
+                    speed={0.3}
+                    squareSize={60}
+                    borderColor="#353535"
+                    gridColor="#252525" 
+                    accentColor="#f97316"
+                    hoverFillColor="rgba(249, 115, 22, 0.1)"
+                    dotSize={1.2}
+                    patternDensity={10}
+                  />
+                </div>
+                <div className="flex-grow relative z-10">
+                  {children}
+                </div>
+                <Footer />
               </div>
-              <div className="flex-grow relative z-10">
-                {children}
-              </div>
-              <Footer />
-            </div>
+            </ApiProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>

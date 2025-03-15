@@ -2,7 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useApi } from '@/contexts/ApiContext';
 import { Squares } from '@/components/ui/squares-background';
+import { ButtonColorful } from '@/components/ui/button-colorful';
+import { Check, Copy, Save } from 'lucide-react';
 
 interface UserProfile {
   id: string;
@@ -31,17 +34,28 @@ interface UserLora {
 
 export default function MyPage() {
   const { t } = useLanguage();
+  const { apiKey, saveApiKey, selectedLoraUrl } = useApi();
   const [activeTab, setActiveTab] = useState<'profile' | 'history' | 'loras'>('profile');
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loras, setLoras] = useState<UserLora[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [pendingApiKey, setPendingApiKey] = useState('');
+  const [apiKeyCopied, setApiKeyCopied] = useState(false);
 
   useEffect(() => {
     document.title = `${t('mypage')} - ${t('companyName')}`;
     
-    // ここでSupabaseからデータを取得する処理を追加予定
-    // 仮のダミーデータを設定
+    // APIキーがあれば適用する
+    if (apiKey) {
+      setPendingApiKey(apiKey);
+    }
+
+    // 仮のプリセットAPIキーを設定（本来はこういう場所に置くべきではありません）
+    const presetApiKey = "5db59d74-127a-4240-a028-2662d88522a4:f7e522e4afbf3486f03f771446bbfe4b";
+    
+    // ダミーデータを設定
     setTimeout(() => {
       setProfile({
         id: 'user-123',
@@ -50,7 +64,7 @@ export default function MyPage() {
         avatar_url: 'https://i.pravatar.cc/150?img=3',
         subscription_tier: 'free',
         subscription_status: 'active',
-        api_key: 'sk-123456789'
+        api_key: apiKey || presetApiKey
       });
       
       setHistory([
@@ -70,24 +84,29 @@ export default function MyPage() {
         }
       ]);
       
-      setLoras([
+      // LoraのURLが選択されていれば追加
+      const loraList = [
         {
           id: 'lora-1',
           name: 'マイアニメスタイル',
           image_url: 'https://picsum.photos/200/200?anime',
           created_at: '2023-05-20T09:15:00Z'
-        },
-        {
-          id: 'lora-2',
-          name: 'ファンタジー背景',
-          image_url: 'https://picsum.photos/200/200?fantasy',
-          created_at: '2023-05-10T15:45:00Z'
         }
-      ]);
+      ];
       
+      if (selectedLoraUrl) {
+        loraList.unshift({
+          id: 'custom-portrait',
+          name: 'ポートレートスタイル',
+          image_url: 'https://plus.unsplash.com/premium_photo-1669324357471-e33e71e3f3d8?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3',
+          created_at: new Date().toISOString()
+        });
+      }
+      
+      setLoras(loraList);
       setIsLoading(false);
     }, 1000);
-  }, [t]);
+  }, [t, apiKey, selectedLoraUrl]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -103,13 +122,22 @@ export default function MyPage() {
   const copyApiKey = () => {
     if (profile?.api_key) {
       navigator.clipboard.writeText(profile.api_key);
-      alert('APIキーがコピーされました');
+      setApiKeyCopied(true);
+      setTimeout(() => setApiKeyCopied(false), 2000);
+    }
+  };
+
+  const saveNewApiKey = () => {
+    if (pendingApiKey) {
+      saveApiKey(pendingApiKey);
+      setProfile(prev => prev ? {...prev, api_key: pendingApiKey} : null);
+      alert('APIキーが保存されました');
     }
   };
 
   const renderProfileTab = () => (
     <div className="space-y-6">
-      <div className="bg-gray-800 rounded-lg p-6 shadow-md">
+      <div className="bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 shadow-md">
         <div className="flex items-center space-x-4">
           {profile?.avatar_url && (
             <img 
@@ -131,9 +159,9 @@ export default function MyPage() {
               <p className="text-white">現在のプラン: <span className="font-bold capitalize">{profile?.subscription_tier || 'Free'}</span></p>
               <p className="text-gray-300 text-sm">ステータス: {profile?.subscription_status === 'active' ? 'アクティブ' : '無効'}</p>
             </div>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-              アップグレード
-            </button>
+            <ButtonColorful 
+              label="アップグレード"
+            />
           </div>
         </div>
         
@@ -141,19 +169,38 @@ export default function MyPage() {
           <h3 className="text-xl font-semibold text-white mb-3">APIキー</h3>
           <div className="flex items-center space-x-2">
             <input 
-              type="password" 
-              value={profile?.api_key || ''} 
-              readOnly 
+              type={showApiKey ? "text" : "password"}
+              value={pendingApiKey} 
+              onChange={(e) => setPendingApiKey(e.target.value)}
               className="bg-gray-700 text-white p-2 rounded flex-grow" 
             />
             <button 
-              onClick={copyApiKey} 
+              onClick={() => setShowApiKey(!showApiKey)} 
               className="bg-gray-600 hover:bg-gray-500 text-white p-2 rounded"
             >
-              コピー
+              {showApiKey ? '隠す' : '表示'}
             </button>
           </div>
-          <p className="text-gray-400 text-sm mt-2">APIキーは外部に漏らさないでください。</p>
+          
+          <div className="flex justify-between mt-2">
+            <p className="text-gray-400 text-sm">APIキーは外部に漏らさないでください。</p>
+            <div className="flex space-x-2">
+              <button 
+                onClick={copyApiKey} 
+                className="flex items-center bg-gray-600 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm"
+              >
+                {apiKeyCopied ? <Check className="w-4 h-4 mr-1" /> : <Copy className="w-4 h-4 mr-1" />}
+                {apiKeyCopied ? 'コピー済み' : 'コピー'}
+              </button>
+              <button 
+                onClick={saveNewApiKey} 
+                className="flex items-center bg-orange-600 hover:bg-orange-500 text-white px-3 py-1 rounded text-sm"
+              >
+                <Save className="w-4 h-4 mr-1" />
+                保存
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -249,7 +296,18 @@ export default function MyPage() {
       </div>
       
       <div className="relative z-10 max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
-        <h1 className="text-3xl font-bold text-white mb-8">マイページ</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white">マイページ</h1>
+          <a 
+            href="/" 
+            className="flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg shadow-md transition-all duration-300"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            ホームに戻る
+          </a>
+        </div>
         
         <div className="bg-gray-900 bg-opacity-90 backdrop-blur-sm rounded-xl overflow-hidden shadow-xl">
           <div className="border-b border-gray-800">

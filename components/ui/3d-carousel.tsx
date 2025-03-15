@@ -8,6 +8,8 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion"
+import { useApi } from "@/contexts/ApiContext"
+import { getLoraModels, LoraModel } from "@/lib/supabase"
 
 export const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect
@@ -58,74 +60,10 @@ export function useMediaQuery(
   return matches
 }
 
-type Lora = {
-  id: string;
-  name: string;
-  imageUrl: string;
-  author?: string;
-  description?: string;
-}
+// Lora型をLoraModelに置き換え
+type Lora = LoraModel;
 
-// サンプルLoraデータ
-const sampleLoras: Lora[] = [
-  {
-    id: "1",
-    name: "アニメスタイル",
-    imageUrl: "https://v3.fal.media/files/zebra/jCKae-M1MGClNffKuxVJl_pytorch_lora_weights.safetensors",
-    author: "アニメ作家",
-    description: "アニメ風のスタイルを適用するLora"
-  },
-  {
-    id: "2",
-    name: "水彩画風",
-    imageUrl: "https://picsum.photos/200/300?watercolor",
-    author: "水彩アーティスト",
-    description: "水彩画風のスタイルを適用するLora"
-  },
-  {
-    id: "3",
-    name: "モノクロ",
-    imageUrl: "https://picsum.photos/200/300?monochrome",
-    author: "モノクロアーティスト",
-    description: "モノクロスタイルを適用するLora"
-  },
-  {
-    id: "4",
-    name: "ネオン",
-    imageUrl: "https://picsum.photos/200/300?neon",
-    author: "ネオンアーティスト",
-    description: "ネオン効果を適用するLora"
-  },
-  {
-    id: "5",
-    name: "レトロ",
-    imageUrl: "https://picsum.photos/200/300?retro",
-    author: "レトロアーティスト",
-    description: "レトロスタイルを適用するLora"
-  },
-  {
-    id: "6",
-    name: "ファンタジー",
-    imageUrl: "https://picsum.photos/200/300?fantasy",
-    author: "ファンタジーアーティスト",
-    description: "ファンタジースタイルを適用するLora"
-  },
-  {
-    id: "7",
-    name: "サイバーパンク",
-    imageUrl: "https://picsum.photos/200/300?cyberpunk",
-    author: "サイバーパンクアーティスト",
-    description: "サイバーパンクスタイルを適用するLora"
-  },
-  {
-    id: "8",
-    name: "和風",
-    imageUrl: "https://picsum.photos/200/300?japanese",
-    author: "和風アーティスト",
-    description: "和風スタイルを適用するLora"
-  }
-];
-
+// サンプルデータの代わりにSupabaseから取得したデータを使用
 const duration = 0.15
 const transition = { duration, ease: [0.32, 0.72, 0, 1], filter: "blur(4px)" }
 const transitionOverlay = { duration: 0.5, ease: [0.32, 0.72, 0, 1] }
@@ -202,12 +140,12 @@ const Carousel = memo(
               onClick={() => handleClick(lora, i)}
             >
               <motion.img
-                src={lora.imageUrl}
+                src={lora.image_url}
                 alt={`${lora.name}`}
                 layoutId={`img-${lora.id}`}
                 className="w-full h-full object-cover transition-all duration-300 hover:scale-105 hover:opacity-100 cursor-pointer shadow-lg"
                 initial={{ filter: "blur(4px)" }}
-                animate={{ filter: "blur(0px)", opacity: 0.8 }}
+                animate={{ filter: "blur(0px)", opacity: 0.9 }}
                 transition={transition}
               />
             </motion.div>
@@ -223,12 +161,66 @@ function ThreeDPhotoCarousel() {
   const [isCarouselActive, setIsCarouselActive] = useState(true)
   const [autoRotate, setAutoRotate] = useState(true) 
   const controls = useAnimation()
-  const cards = useMemo(() => sampleLoras, [])
+  const [cards, setCards] = useState<Lora[]>([])
   const rotation = useMotionValue(0)
+  const { saveSelectedLoraUrl } = useApi()
 
+  // Supabaseからデータを取得
   useEffect(() => {
-    console.log("Cards loaded:", cards)
-  }, [cards])
+    async function loadLoraModels() {
+      try {
+        // 現在の画像を追加した一時的なデータ（実際の実装ではSupabaseからデータを取得）
+        const models = [
+          {
+            id: "portrait-asian",
+            name: "アジアンビューティー",
+            image_url: "/images/asian-portrait.jpg", // 正しいパスに修正
+            author: "ポートレート専門家",
+            description: "アジアの自然な美しさを引き出すスタイルを適用するLora",
+            lora_url: "https://storage.googleapis.com/fal-flux-lora/a82719e8f8d845d4b08d792ec3e054d8_pytorch_lora_weights.safetensors",
+            created_at: new Date().toISOString()
+          },
+          {
+            id: "anime-style",
+            name: "アニメスタイル",
+            image_url: "/images/anime.jpg",
+            author: "アニメ作家",
+            description: "アニメ風のスタイルを適用するLora",
+            lora_url: "https://storage.googleapis.com/fal-flux-lora/anime-style-lora.safetensors",
+            created_at: new Date().toISOString()
+          },
+          {
+            id: "watercolor",
+            name: "水彩画風",
+            image_url: "/images/watercolor.jpg",
+            author: "水彩アーティスト",
+            description: "水彩画風のスタイルを適用するLora",
+            lora_url: "https://storage.googleapis.com/fal-flux-lora/watercolor-style-lora.safetensors",
+            created_at: new Date().toISOString()
+          },
+          {
+            id: "monochrome",
+            name: "モノクロ",
+            image_url: "/images/monochrome.jpg",
+            author: "モノクロアーティスト",
+            description: "モノクロスタイルを適用するLora",
+            lora_url: "https://storage.googleapis.com/fal-flux-lora/monochrome-style-lora.safetensors",
+            created_at: new Date().toISOString()
+          }
+        ];
+        
+        // 本番では以下のようにSupabaseからデータを取得
+        // const models = await getLoraModels();
+        
+        setCards(models);
+        console.log("Lora models loaded:", models);
+      } catch (error) {
+        console.error("Error loading Lora models:", error);
+      }
+    }
+    
+    loadLoraModels();
+  }, []);
 
   // 自動回転を処理する関数
   const autoRotateCarousel = useCallback(() => {
@@ -256,6 +248,11 @@ function ThreeDPhotoCarousel() {
     setActiveLora(lora)
     setIsCarouselActive(false)
     controls.stop()
+    
+    // Loraが選択されたらURLを保存
+    if (lora.lora_url) {
+      saveSelectedLoraUrl(lora.lora_url)
+    }
   }
 
   const handleClose = () => {
@@ -295,7 +292,7 @@ function ThreeDPhotoCarousel() {
               <div className="relative">
                 <motion.img
                   layoutId={`img-${activeLora.id}`}
-                  src={activeLora.imageUrl}
+                  src={activeLora.image_url}
                   className="w-full max-h-[60vh] object-contain"
                   initial={{ scale: 0.5 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -324,7 +321,7 @@ function ThreeDPhotoCarousel() {
                 {activeLora.description && <p className="text-gray-200 mb-4">{activeLora.description}</p>}
                 <div className="flex justify-end">
                   <button 
-                    className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-md transition-colors duration-300"
+                    className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-md transition-colors duration-300"
                     onClick={(e) => {
                       e.stopPropagation();
                       console.log("Lora selected:", activeLora);

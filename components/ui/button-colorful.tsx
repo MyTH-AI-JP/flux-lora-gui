@@ -1,47 +1,34 @@
-import { Button } from "@/components/ui/button";
+import React from "react";
 import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
+import { LucideIcon } from "lucide-react";
+import { buttonVariants } from "./button";
 
-export interface ButtonColorfulProps {
-    icon?: ReactNode;
+export interface ButtonColorfulProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    icon?: React.ReactNode;
     label?: string;
-    className?: string;
-    variant?: "default" | "violet" | "emerald" | "amber" | "rose";
-    onClick?: () => void;
+    children?: React.ReactNode;
 }
 
 export function ButtonColorful({
+    className,
     icon,
     label,
-    className,
-    variant = "default",
-    onClick,
+    children,
     ...props
 }: ButtonColorfulProps) {
-    const gradients = {
-        default: "from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500",
-        violet: "from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500",
-        emerald: "from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500",
-        amber: "from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500",
-        rose: "from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500",
-    };
-
-    const gradient = gradients[variant];
-
     return (
-        <Button
+        <button
             className={cn(
-                "relative overflow-hidden bg-gradient-to-r transition-all duration-300",
-                gradient,
+                buttonVariants({ variant: "default" }),
+                "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0",
                 className
             )}
-            onClick={onClick}
             {...props}
         >
-            <div className="relative z-10 flex items-center justify-center">
+            <div className="flex items-center justify-center">
                 {icon && <span className="mr-2">{icon}</span>}
-                {label && <span>{label}</span>}
+                {label || children}
             </div>
-        </Button>
+        </button>
     );
 } 
