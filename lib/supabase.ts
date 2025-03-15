@@ -462,6 +462,15 @@ export async function getUserLoraModels(userId: string): Promise<LoraModel[]> {
 function getUserLoraModelsMock(): LoraModel[] {
   return [
     {
+      id: 'jk-sakura',
+      name: 'JK Sakura',
+      image_url: '/images/jk_sakura.jpg',
+      author: 'MyTH AI',
+      description: '女子高生の桜（さくら）Loraモデル。制服を着た可愛い女子高生のキャラクター。',
+      lora_url: 'https://v3.fal.media/files/panda/Lim1EF3ScgEG1RfAooimI_pytorch_lora_weights.safetensors',
+      created_at: new Date().toISOString()
+    },
+    {
       id: 'user-portrait-asian',
       name: 'カスタムアジアンビューティー',
       image_url: '/images/asian-portrait.jpg',
@@ -518,6 +527,13 @@ export async function getCarouselModels(): Promise<CarouselModel[]> {
  */
 function getCarouselModelsMock(): CarouselModel[] {
   return [
+    {
+      id: '0',
+      lora_id: 'jk-sakura',
+      position: 0,
+      is_active: true,
+      created_at: new Date().toISOString()
+    },
     {
       id: '1',
       lora_id: 'portrait-asian',
