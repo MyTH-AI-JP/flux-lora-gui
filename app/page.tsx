@@ -34,7 +34,7 @@ export default function Home() {
       </div>
       
       <div className="relative z-10 p-6 md:p-10 max-w-7xl mx-auto">
-        <nav className="flex justify-between items-center mb-12 backdrop-blur-sm bg-gray-900/50 p-4 rounded-lg shadow-lg border border-gray-800">
+        <nav className="flex justify-between items-center mb-12 backdrop-blur-sm bg-gray-900/50 dark:bg-gray-900/50 bg-white/50 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-800">
           <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500">
             {t('title')}
           </h1>
@@ -53,7 +53,9 @@ export default function Home() {
               <CreditCard className="w-4 h-4 mr-2" />
               プラン
             </Link>
-            <ThemeToggle />
+            <div className="flex items-center justify-center p-1 rounded-lg" id="theme-toggle-wrapper">
+              <ThemeToggle />
+            </div>
             <LanguageSelector />
           </div>
         </nav>

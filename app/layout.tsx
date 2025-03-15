@@ -89,28 +89,29 @@ export default function RootLayout({
           rel="stylesheet" 
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         />
+        {/* テーマの初期化スクリプト - シンプルな実装 */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              (function() {
-                try {
-                  const savedTheme = localStorage.getItem('theme');
-                  if (savedTheme === 'light') {
-                    document.documentElement.classList.remove('dark');
-                  } else if (savedTheme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                  }
-                } catch (e) {
-                  console.error('Theme initialization error:', e);
+              try {
+                const theme = localStorage.getItem('theme');
+                if (theme === 'light') {
+                  document.documentElement.classList.remove('dark');
+                } else if (theme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                  document.documentElement.classList.remove('dark');
                 }
-              })();
+              } catch (e) {
+                console.error('テーマ初期化エラー:', e);
+              }
             `
           }}
         />
       </head>
       <body className={clsx(
         notoSerifJP.className,
-        'bg-[#060606] text-gray-200 dark:text-gray-100 transition-colors duration-200'
+        'bg-white dark:bg-[#060606] text-gray-900 dark:text-gray-100 transition-colors duration-200'
       )}>
         <ThemeProvider>
           <LanguageProvider>
