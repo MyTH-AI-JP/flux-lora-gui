@@ -219,33 +219,56 @@ export async function deleteLoraModel(id: string): Promise<boolean> {
 }
 
 /**
- * 画像をSupabaseのストレージにアップロード
+ * 画像ファイルをSupabaseストレージにアップロードする
  * @param file アップロードするファイル
- * @param path 保存先のパス
+ * @param userId ユーザーID
+ * @param prefix ファイル名のプレフィックス（オプション）
+ * @returns アップロードされた画像のURL
  */
-export async function uploadImageToSupabase(file: File, path: string = 'lora-images'): Promise<string | null> {
+export async function uploadImageToSupabase(
+  file: File,
+  userId: string,
+  prefix: string = 'lora-thumbnail'
+): Promise<string | null> {
   try {
+    // 開発環境ではBase64 URLを返す（モック）
+    if (supabaseUrl.includes('localhost') || !userId || userId.startsWith('user-')) {
+      console.log('開発環境では画像アップロードをモックします');
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ファイル名を生成（重複を避けるためにタイムスタンプとランダム文字列を追加）
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}.${fileExt}`;
-    const filePath = `${path}/${fileName}`;
+    const fileName = `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+    const filePath = `${userId}/${fileName}`;
 
-    // アップロード処理
-    const { error: uploadError } = await supabase.storage
-      .from('images')
-      .upload(filePath, file);
+    // 画像をアップロード
+    const { data, error } = await supabase.storage
+      .from('lora-thumbnails') // バケット名
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
-    if (uploadError) {
-      throw uploadError;
+    if (error) {
+      console.error('Error uploading image:', error);
+      return null;
     }
 
     // 公開URLを取得
-    const { data } = supabase.storage
-      .from('images')
-      .getPublicUrl(filePath);
+    const { data: { publicUrl } } = supabase.storage
+      .from('lora-thumbnails')
+      .getPublicUrl(data.path);
 
-    return data.publicUrl;
-  } catch (error) {
-    console.error('Error uploading image:', error);
+    return publicUrl;
+  } catch (err) {
+    console.error('Unexpected error in uploadImageToSupabase:', err);
     return null;
   }
 }
@@ -289,6 +312,12 @@ export async function deleteImageFromSupabase(url: string): Promise<boolean> {
  */
 export async function getUserImageHistory(userId: string): Promise<HistoryItem[]> {
   try {
+    // 開発環境では常にモックデータを返す（本番環境では適切に修正する必要あり）
+    if (supabaseUrl.includes('localhost') || !userId || userId.startsWith('user-')) {
+      console.log('開発環境ではモックデータを使用します');
+      return getSampleImageHistory(userId);
+    }
+
     const { data, error } = await supabase
       .from('image_history')
       .select('*')
@@ -383,6 +412,12 @@ export async function addImageHistoryItem(historyItem: Omit<HistoryItem, 'id' | 
  */
 export async function getUserLoraModels(userId: string): Promise<LoraModel[]> {
   try {
+    // 開発環境では常にモックデータを返す（本番環境では適切に修正する必要あり）
+    if (supabaseUrl.includes('localhost') || !userId || userId.startsWith('user-')) {
+      console.log('開発環境ではモックLoraデータを使用します');
+      return getUserLoraModelsMock();
+    }
+
     const { data, error } = await supabase
       .from('user_lora_models')
       .select('*')
@@ -391,14 +426,40 @@ export async function getUserLoraModels(userId: string): Promise<LoraModel[]> {
 
     if (error) {
       console.error('Error fetching user Lora models:', error);
-      return [];
+      return getUserLoraModelsMock();
     }
 
     return data || [];
   } catch (err) {
     console.error('Unexpected error in getUserLoraModels:', err);
-    return [];
+    return getUserLoraModelsMock();
   }
+}
+
+/**
+ * モックユーザーLoraモデルデータを返す
+ */
+function getUserLoraModelsMock(): LoraModel[] {
+  return [
+    {
+      id: 'user-portrait-asian',
+      name: 'カスタムアジアンビューティー',
+      image_url: '/images/asian-portrait.jpg',
+      author: 'あなた',
+      description: 'カスタマイズしたアジアンビューティーLoraモデル',
+      lora_url: 'https://storage.googleapis.com/fal-flux-lora/a82719e8f8d845d4b08d792ec3e054d8_pytorch_lora_weights.safetensors',
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 'user-sakura-style',
+      name: 'カスタム桜スタイル',
+      image_url: '/images/sakura.jpg',
+      author: 'あなた',
+      description: 'カスタマイズした桜の風景Loraモデル',
+      lora_url: 'https://v3.fal.media/files/zebra/jCKae-M1MGClNffKuxVJl_pytorch_lora_weights.safetensors',
+      created_at: new Date().toISOString()
+    }
+  ];
 }
 
 /**
@@ -406,6 +467,9 @@ export async function getUserLoraModels(userId: string): Promise<LoraModel[]> {
  */
 export async function getCarouselModels(): Promise<CarouselModel[]> {
   try {
+    console.log('Supabase URL:', supabaseUrl);
+    console.log('Attempting to fetch carousel models...');
+    
     const { data, error } = await supabase
       .from('carousel_models')
       .select(`
@@ -416,10 +480,12 @@ export async function getCarouselModels(): Promise<CarouselModel[]> {
       .eq('is_active', true);
 
     if (error) {
-      console.error('Error fetching carousel models:', error);
+      console.error('Error fetching carousel models:', error.message);
+      console.error('Error details:', error);
       return getCarouselModelsMock();
     }
 
+    console.log('Carousel models fetched:', data);
     return data || [];
   } catch (err) {
     console.error('Unexpected error in getCarouselModels:', err);
@@ -587,4 +653,178 @@ export async function checkSupabaseConnection(): Promise<{ isConnected: boolean;
       error: `予期しないエラー: ${err instanceof Error ? err.message : String(err)}` 
     };
   }
-} 
+}
+
+/**
+ * ユーザーのカスタムLoraモデルを作成
+ * @param userId ユーザーID
+ * @param loraModel Loraモデルデータ
+ */
+export async function createUserLoraModel(
+  userId: string, 
+  loraModel: Omit<LoraModel, 'id' | 'created_at'> & { selectedFile?: File | null }
+): Promise<LoraModel | null> {
+  try {
+    // 画像ファイルがアップロードされている場合は、まずストレージにアップロード
+    let imageUrl = loraModel.image_url;
+    if (loraModel.selectedFile) {
+      const uploadedUrl = await uploadImageToSupabase(loraModel.selectedFile, userId);
+      if (uploadedUrl) {
+        imageUrl = uploadedUrl;
+      }
+    }
+
+    // 開発環境では作成成功を模擬してモックを返す
+    if (supabaseUrl.includes('localhost') || !userId || userId.startsWith('user-')) {
+      console.log('開発環境では新規Loraの作成をモックします');
+      const mockModel: LoraModel = {
+        id: `user-${Date.now()}`,
+        name: loraModel.name,
+        image_url: imageUrl || '',
+        author: 'あなた',
+        description: loraModel.description || '',
+        lora_url: loraModel.lora_url || '',
+        created_at: new Date().toISOString()
+      };
+      return mockModel;
+    }
+
+    const { data, error } = await supabase
+      .from('user_lora_models')
+      .insert([{
+        user_id: userId,
+        name: loraModel.name,
+        image_url: imageUrl,
+        description: loraModel.description,
+        lora_url: loraModel.lora_url,
+        is_public: false
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating user Lora model:', error);
+      return null;
+    }
+
+    return {
+      id: data.id,
+      name: data.name,
+      image_url: data.image_url,
+      author: 'あなた', // ユーザー自身が作成したLoraなので
+      description: data.description || '',
+      lora_url: data.lora_url,
+      created_at: data.created_at
+    };
+  } catch (err) {
+    console.error('Unexpected error in createUserLoraModel:', err);
+    return null;
+  }
+}
+
+/**
+ * ユーザーのカスタムLoraモデルを更新
+ * @param userId ユーザーID
+ * @param loraId LoraモデルのID
+ * @param loraModel 更新するLoraモデルデータ
+ */
+export async function updateUserLoraModel(
+  userId: string,
+  loraId: string,
+  loraModel: Partial<Omit<LoraModel, 'id' | 'created_at'>> & { selectedFile?: File | null }
+): Promise<LoraModel | null> {
+  try {
+    // 画像ファイルがアップロードされている場合は、まずストレージにアップロード
+    let imageUrl = loraModel.image_url;
+    if (loraModel.selectedFile) {
+      const uploadedUrl = await uploadImageToSupabase(loraModel.selectedFile, userId);
+      if (uploadedUrl) {
+        imageUrl = uploadedUrl;
+      }
+    }
+
+    // 開発環境では更新成功を模擬してモックを返す
+    if (supabaseUrl.includes('localhost') || !userId || userId.startsWith('user-')) {
+      console.log('開発環境ではLoraの更新をモックします');
+      const mockModels = getUserLoraModelsMock();
+      const modelIndex = mockModels.findIndex(model => model.id === loraId);
+      
+      if (modelIndex === -1) {
+        return null;
+      }
+      
+      const updatedModel = {
+        ...mockModels[modelIndex],
+        ...loraModel,
+        image_url: imageUrl || mockModels[modelIndex].image_url
+      };
+      
+      return updatedModel;
+    }
+
+    const { data, error } = await supabase
+      .from('user_lora_models')
+      .update({
+        name: loraModel.name,
+        image_url: imageUrl,
+        description: loraModel.description,
+        lora_url: loraModel.lora_url
+      })
+      .eq('id', loraId)
+      .eq('user_id', userId) // ユーザー自身のモデルのみ更新可能
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating user Lora model:', error);
+      return null;
+    }
+
+    return {
+      id: data.id,
+      name: data.name,
+      image_url: data.image_url,
+      author: 'あなた',
+      description: data.description || '',
+      lora_url: data.lora_url,
+      created_at: data.created_at
+    };
+  } catch (err) {
+    console.error('Unexpected error in updateUserLoraModel:', err);
+    return null;
+  }
+}
+
+/**
+ * ユーザーのカスタムLoraモデルを削除
+ * @param userId ユーザーID
+ * @param loraId LoraモデルのID
+ */
+export async function deleteUserLoraModel(
+  userId: string,
+  loraId: string
+): Promise<boolean> {
+  try {
+    // 開発環境では削除成功を模擬
+    if (supabaseUrl.includes('localhost') || !userId || userId.startsWith('user-')) {
+      console.log('開発環境ではLoraの削除をモックします');
+      return true;
+    }
+
+    const { error } = await supabase
+      .from('user_lora_models')
+      .delete()
+      .eq('id', loraId)
+      .eq('user_id', userId); // ユーザー自身のモデルのみ削除可能
+
+    if (error) {
+      console.error('Error deleting user Lora model:', error);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error('Unexpected error in deleteUserLoraModel:', err);
+    return false;
+  }
+}

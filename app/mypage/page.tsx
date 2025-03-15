@@ -5,8 +5,19 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useApi } from '@/contexts/ApiContext';
 import { Squares } from '@/components/ui/squares-background';
 import { ButtonColorful } from '@/components/ui/button-colorful';
-import { Check, Copy, Save } from 'lucide-react';
-import { getUserImageHistory, HistoryItem as SupabaseHistoryItem, getUserLoraModels, LoraModel } from '@/lib/supabase';
+import { Check, Copy, Save, Edit, Trash2, Plus } from 'lucide-react';
+import { 
+  getUserImageHistory, 
+  HistoryItem as SupabaseHistoryItem, 
+  getUserLoraModels, 
+  LoraModel,
+  createUserLoraModel,
+  updateUserLoraModel,
+  deleteUserLoraModel
+} from '@/lib/supabase';
+import { LoraDialog } from '@/components/lora/LoraDialog';
+import { DeleteConfirmDialog } from '@/components/lora/DeleteConfirmDialog';
+import { Button } from '@/components/ui/button';
 
 interface UserProfile {
   id: string;
@@ -35,6 +46,12 @@ export default function MyPage() {
   const [showApiKey, setShowApiKey] = useState(false);
   const [pendingApiKey, setPendingApiKey] = useState('');
   const [apiKeyCopied, setApiKeyCopied] = useState(false);
+  
+  // Lora管理用の状態
+  const [isLoraDialogOpen, setIsLoraDialogOpen] = useState(false);
+  const [editingLora, setEditingLora] = useState<LoraModel | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deletingLora, setDeletingLora] = useState<LoraModel | null>(null);
 
   useEffect(() => {
     document.title = `${t('mypage')} - ${t('companyName')}`;
@@ -135,231 +152,298 @@ export default function MyPage() {
     }
   };
 
-  const renderProfileTab = () => (
-    <div className="space-y-6">
-      <div className="bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 shadow-md">
-        <div className="flex items-center space-x-4">
-          {profile?.avatar_url && (
-            <img 
-              src={profile.avatar_url} 
-              alt="プロフィール画像" 
-              className="w-20 h-20 rounded-full" 
-            />
-          )}
-          <div>
-            <h2 className="text-2xl font-bold text-white">{profile?.username || 'ユーザー'}</h2>
-            <p className="text-gray-300">{profile?.email}</p>
-          </div>
-        </div>
-        
-        <div className="mt-6 border-t border-gray-700 pt-4">
-          <h3 className="text-xl font-semibold text-white mb-3">サブスクリプション</h3>
-          <div className="flex justify-between items-center bg-gray-700 p-3 rounded">
-            <div>
-              <p className="text-white">現在のプラン: <span className="font-bold capitalize">{profile?.subscription_tier || 'Free'}</span></p>
-              <p className="text-gray-300 text-sm">ステータス: {profile?.subscription_status === 'active' ? 'アクティブ' : '無効'}</p>
-            </div>
-            <ButtonColorful 
-              label="アップグレード"
-            />
-          </div>
-        </div>
-        
-        <div className="mt-6 border-t border-gray-700 pt-4">
-          <h3 className="text-xl font-semibold text-white mb-3">APIキー</h3>
-          <div className="flex items-center space-x-2">
-            <input 
-              type={showApiKey ? "text" : "password"}
-              value={pendingApiKey} 
-              onChange={(e) => setPendingApiKey(e.target.value)}
-              className="bg-gray-700 text-white p-2 rounded flex-grow" 
-            />
-            <button 
-              onClick={() => setShowApiKey(!showApiKey)} 
-              className="bg-gray-600 hover:bg-gray-500 text-white p-2 rounded"
-            >
-              {showApiKey ? '隠す' : '表示'}
-            </button>
-          </div>
-          
-          <div className="flex justify-between mt-2">
-            <p className="text-gray-400 text-sm">APIキーは外部に漏らさないでください。</p>
-            <div className="flex space-x-2">
-              <button 
-                onClick={copyApiKey} 
-                className="flex items-center bg-gray-600 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm"
-              >
-                {apiKeyCopied ? <Check className="w-4 h-4 mr-1" /> : <Copy className="w-4 h-4 mr-1" />}
-                {apiKeyCopied ? 'コピー済み' : 'コピー'}
-              </button>
-              <button 
-                onClick={saveNewApiKey} 
-                className="flex items-center bg-orange-600 hover:bg-orange-500 text-white px-3 py-1 rounded text-sm"
-              >
-                <Save className="w-4 h-4 mr-1" />
-                保存
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  // 新規Lora作成ダイアログを開く
+  const openCreateDialog = () => {
+    setEditingLora(null);
+    setIsLoraDialogOpen(true);
+  };
 
-  const renderHistoryTab = () => (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold text-white">生成履歴</h2>
-      {history.length === 0 ? (
-        <p className="text-gray-400">履歴がありません</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {history.map((item) => (
-            <div key={item.id} className="bg-gray-800 rounded-lg overflow-hidden shadow-md">
-              <img 
-                src={item.result_url} 
-                alt={item.prompt} 
-                className="w-full h-48 object-cover" 
-              />
-              <div className="p-4">
-                <p className="text-white font-medium truncate">{item.prompt}</p>
-                <p className="text-gray-400 text-sm">{formatDate(item.created_at)}</p>
-                <div className="flex justify-between mt-2">
-                  <span className={`text-sm px-2 py-1 rounded ${
-                    item.status === 'completed' ? 'bg-green-900 text-green-300' : 
-                    item.status === 'failed' ? 'bg-red-900 text-red-300' : 
-                    'bg-yellow-900 text-yellow-300'
-                  }`}>
-                    {item.status === 'completed' ? '完了' : 
-                     item.status === 'failed' ? '失敗' : '処理中'}
-                  </span>
-                  <button className="text-blue-400 hover:text-blue-300 text-sm">
-                    再生成
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  // Lora編集ダイアログを開く
+  const openEditDialog = (lora: LoraModel) => {
+    setEditingLora(lora);
+    setIsLoraDialogOpen(true);
+  };
 
-  const renderLorasTab = () => (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-white">マイLora</h2>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
-          新規作成
-        </button>
-      </div>
+  // 削除確認ダイアログを開く
+  const openDeleteDialog = (lora: LoraModel) => {
+    setDeletingLora(lora);
+    setIsDeleteDialogOpen(true);
+  };
+
+  // Loraの保存処理（新規作成または更新）
+  const handleSaveLora = async (loraData: Partial<LoraModel> & { selectedFile?: File | null }) => {
+    try {
+      const userId = profile?.id || 'user-123'; // 開発用に仮のIDを使用
       
-      {loras.length === 0 ? (
-        <p className="text-gray-400">登録されたLoraがありません</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {loras.map((lora) => (
-            <div key={lora.id} className="bg-gray-800 rounded-lg overflow-hidden shadow-md">
-              <img 
-                src={lora.image_url} 
-                alt={lora.name} 
-                className="w-full h-40 object-cover" 
-              />
-              <div className="p-3">
-                <h3 className="text-white font-medium">{lora.name}</h3>
-                <p className="text-gray-400 text-xs">{formatDate(lora.created_at)}</p>
-                <div className="flex justify-between mt-2">
-                  <button className="text-blue-400 hover:text-blue-300 text-xs">
-                    編集
-                  </button>
-                  <button className="text-red-400 hover:text-red-300 text-xs">
-                    削除
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+      if (editingLora) {
+        // 既存のLoraを更新
+        const updatedLora = await updateUserLoraModel(userId, editingLora.id, loraData);
+        if (updatedLora) {
+          // 成功した場合、Loraリストを更新
+          setLoras(prev => prev.map(lora => 
+            lora.id === editingLora.id ? updatedLora : lora
+          ));
+          setIsLoraDialogOpen(false);
+          alert('Loraを更新しました');
+        }
+      } else {
+        // 新規Loraを作成
+        const newLora = await createUserLoraModel(userId, {
+          name: loraData.name || '',
+          image_url: loraData.image_url || '',
+          description: loraData.description || '',
+          lora_url: loraData.lora_url || '',
+          author: 'あなた',
+          selectedFile: loraData.selectedFile
+        });
+        
+        if (newLora) {
+          // 成功した場合、Loraリストに追加
+          setLoras(prev => [newLora, ...prev]);
+          setIsLoraDialogOpen(false);
+          alert('新しいLoraを作成しました');
+        }
+      }
+    } catch (error) {
+      console.error('Error saving Lora:', error);
+      alert('Loraの保存中にエラーが発生しました');
+    }
+  };
+
+  // Loraの削除処理
+  const handleDeleteLora = async () => {
+    if (!deletingLora) return;
+    
+    try {
+      const userId = profile?.id || 'user-123'; // 開発用に仮のIDを使用
+      const success = await deleteUserLoraModel(userId, deletingLora.id);
+      
+      if (success) {
+        // 成功した場合、削除したLoraをリストから除外
+        setLoras(prev => prev.filter(lora => lora.id !== deletingLora.id));
+        setIsDeleteDialogOpen(false);
+        alert('Loraを削除しました');
+      } else {
+        alert('Loraの削除に失敗しました');
+      }
+    } catch (error) {
+      console.error('Error deleting Lora:', error);
+      alert('Loraの削除中にエラーが発生しました');
+    }
+  };
 
   return (
-    <main className="min-h-screen relative">
-      <div className="absolute inset-0 z-0">
-        <Squares 
-          direction="diagonal"
-          speed={0.3}
-          squareSize={40}
-          borderColor="#333" 
-          hoverFillColor="#222"
-        />
-      </div>
+    <div className="relative min-h-screen">
+      <Squares 
+        direction="diagonal"
+        speed={0.5}
+        squareSize={50}
+        borderColor="#333" 
+        hoverFillColor="#222"
+      />
       
-      <div className="relative z-10 max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white">{t('myPage')}</h1>
-          <a 
-            href="/" 
-            className="flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg shadow-md transition-all duration-300"
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* タブナビゲーション */}
+        <div className="mb-6 border-b border-gray-700 flex">
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={`px-4 py-2 mr-2 font-medium ${activeTab === 'profile' ? 'border-b-2 border-primary text-primary' : 'text-gray-400'}`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-            </svg>
-            {t('backToHome', 'ホームに戻る')}
-          </a>
+            {t('profile')}
+          </button>
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`px-4 py-2 mr-2 font-medium ${activeTab === 'history' ? 'border-b-2 border-primary text-primary' : 'text-gray-400'}`}
+          >
+            {t('history')}
+          </button>
+          <button
+            onClick={() => setActiveTab('loras')}
+            className={`px-4 py-2 font-medium ${activeTab === 'loras' ? 'border-b-2 border-primary text-primary' : 'text-gray-400'}`}
+          >
+            {t('myLora.title')}
+          </button>
         </div>
         
-        <div className="bg-gray-900 bg-opacity-90 backdrop-blur-sm rounded-xl overflow-hidden shadow-xl">
-          <div className="border-b border-gray-800">
-            <nav className="flex">
-              <button
-                className={`py-4 px-6 text-sm font-medium ${
-                  activeTab === 'profile' 
-                    ? 'text-white border-b-2 border-blue-500' 
-                    : 'text-gray-400 hover:text-white'
-                }`}
-                onClick={() => setActiveTab('profile')}
-              >
-                プロフィール
-              </button>
-              <button
-                className={`py-4 px-6 text-sm font-medium ${
-                  activeTab === 'history' 
-                    ? 'text-white border-b-2 border-blue-500' 
-                    : 'text-gray-400 hover:text-white'
-                }`}
-                onClick={() => setActiveTab('history')}
-              >
-                生成履歴
-              </button>
-              <button
-                className={`py-4 px-6 text-sm font-medium ${
-                  activeTab === 'loras' 
-                    ? 'text-white border-b-2 border-blue-500' 
-                    : 'text-gray-400 hover:text-white'
-                }`}
-                onClick={() => setActiveTab('loras')}
-              >
-                マイLora
-              </button>
-            </nav>
+        {/* プロフィール表示 */}
+        {activeTab === 'profile' && (
+          <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+            <div className="flex items-center mb-6">
+              {profile?.avatar_url && (
+                <img 
+                  src={profile.avatar_url} 
+                  alt={t('profileImage')}
+                  className="w-16 h-16 rounded-full mr-4 object-cover"
+                />
+              )}
+              <div>
+                <h2 className="text-xl font-bold">{profile?.username || t('user')}</h2>
+                <p className="text-gray-400">{profile?.email}</p>
+              </div>
+            </div>
+            
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-2">{t('currentPlan')}</h3>
+              <div className="flex items-center justify-between bg-gray-700/50 rounded-lg p-4">
+                <div>
+                  <p className="font-medium">{profile?.subscription_tier === 'free' ? t('freePlan') : profile?.subscription_tier}</p>
+                  <p className="text-sm text-gray-400">{t('status')}: {profile?.subscription_status}</p>
+                </div>
+                <ButtonColorful href="/payment" className="text-sm">
+                  {t('changePlan')}
+                </ButtonColorful>
+              </div>
+            </div>
+            
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-2">{t('apiSettings')}</h3>
+              <div className="bg-gray-700/50 rounded-lg p-4">
+                <div className="flex items-center mb-3">
+                  <label htmlFor="api-key" className="block mr-3">
+                    {t('apiKeyLabel')}:
+                  </label>
+                  <div className="relative flex-1">
+                    <input
+                      id="api-key"
+                      type={showApiKey ? "text" : "password"}
+                      className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 pr-9"
+                      value={pendingApiKey}
+                      onChange={(e) => setPendingApiKey(e.target.value)}
+                      placeholder={t('apiKeyPlaceholder')}
+                    />
+                    <button 
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                      onClick={() => setShowApiKey(!showApiKey)}
+                    >
+                      {showApiKey ? t('hidePassword') : t('showPassword')}
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between">
+                  <Button onClick={copyApiKey} variant="outline" className="flex items-center">
+                    <Copy className="w-4 h-4 mr-2" />
+                    {apiKeyCopied ? t('copied') : t('copy')}
+                  </Button>
+                  <Button onClick={saveNewApiKey} variant="default" className="bg-primary hover:bg-primary/90 flex items-center">
+                    <Save className="w-4 h-4 mr-2" />
+                    {t('save')}
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
-          
-          <div className="p-6">
+        )}
+        
+        {/* 履歴表示 */}
+        {activeTab === 'history' && (
+          <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+            <h2 className="text-xl font-bold mb-4">{t('generatedImages')}</h2>
+            
             {isLoading ? (
-              <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+              <div className="text-center py-10">
+                <div className="spinner mb-3"></div>
+                <p>{t('loading')}</p>
+              </div>
+            ) : history.length === 0 ? (
+              <div className="text-center py-10 text-gray-400">
+                <p>{t('noHistory')}</p>
               </div>
             ) : (
-              <>
-                {activeTab === 'profile' && renderProfileTab()}
-                {activeTab === 'history' && renderHistoryTab()}
-                {activeTab === 'loras' && renderLorasTab()}
-              </>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {history.map((item) => (
+                  <div key={item.id} className="bg-gray-700/50 rounded-lg overflow-hidden">
+                    <img 
+                      src={item.result_url} 
+                      alt={item.prompt}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-3">
+                      <p className="line-clamp-2 text-sm mb-1">{item.prompt}</p>
+                      <p className="text-xs text-gray-400">{formatDate(item.created_at)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        </div>
+        )}
+        
+        {/* Lora管理 */}
+        {activeTab === 'loras' && (
+          <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">{t('myLora.title')}</h2>
+              <Button onClick={openCreateDialog} variant="default" className="bg-primary hover:bg-primary/90 flex items-center">
+                <Plus className="w-4 h-4 mr-2" />
+                {t('myLora.create')}
+              </Button>
+            </div>
+            
+            {isLoading ? (
+              <div className="text-center py-10">
+                <div className="spinner mb-3"></div>
+                <p>{t('loading')}</p>
+              </div>
+            ) : loras.length === 0 ? (
+              <div className="text-center py-10 text-gray-400">
+                <p>{t('myLora.noLorasFound')}</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {loras.map((lora) => (
+                  <div key={lora.id} className="bg-gray-700/50 rounded-lg overflow-hidden">
+                    <div className="relative h-48">
+                      <img 
+                        src={lora.image_url || '/images/lora-placeholder.jpg'} 
+                        alt={lora.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-2 right-2 flex space-x-1">
+                        <button 
+                          onClick={() => openEditDialog(lora)}
+                          className="p-1.5 bg-gray-800/80 backdrop-blur-sm rounded-md hover:bg-gray-700"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => openDeleteDialog(lora)}
+                          className="p-1.5 bg-gray-800/80 backdrop-blur-sm rounded-md hover:bg-red-900/80"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <h3 className="font-medium mb-1">{lora.name}</h3>
+                      <p className="text-xs text-gray-400 truncate">{lora.lora_url}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
-    </main>
+      
+      {/* Loraの編集・作成ダイアログ */}
+      <LoraDialog 
+        open={isLoraDialogOpen} 
+        onOpenChange={setIsLoraDialogOpen}
+        lora={editingLora}
+        onSave={handleSaveLora}
+      />
+      
+      {/* Lora削除確認ダイアログ */}
+      <DeleteConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleDeleteLora}
+        title={t('deleteLora')}
+        description={t('deleteLoraConfirm')}
+        lora={deletingLora}
+      />
+      
+    </div>
   );
 } 

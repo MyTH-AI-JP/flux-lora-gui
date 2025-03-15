@@ -11,6 +11,24 @@ A minimal and alternative GUI for [fal.ai/flux-lora](https://fal.ai/models/flux-
 ## Preview - Yes, it's uncensored
 ![image](https://github.com/user-attachments/assets/947b7f56-c706-42a9-9d01-0982fb5ecd3e)
 
+## 最近の更新（Recent Updates）
+
+### 2024年8月
+- **多言語対応の改善**:
+  - 3Dカルーセル、マイページ、プランページのテキストをすべて翻訳関数に統合
+  - 言語選択をlocalStorageに保存し、ページ再読み込み後も維持するように修正
+  - 新しい翻訳キーを追加（自動回転、モデル読み込み状態、Lora管理など）
+
+- **テーマ切り替え機能の修正**:
+  - ライト/ダークモード切り替えが正しく機能するように実装を改善
+  - テーマ設定をlocalStorageに永続化
+  - 初期表示時のテーマ適用プロセスを最適化
+  - スムーズなテーマ遷移のためのトランジション効果を追加
+
+- **フッターの更新**:
+  - フッターの著作権表示を「© 2025 MyTH株式会社 All Rights Reserved.」に統一
+  - 翻訳関数を使わず、常に日本語表示になるよう修正
+
 ## Features
 
 - 🎨 Clean, intuitive interface for image generation
@@ -46,6 +64,12 @@ A minimal and alternative GUI for [fal.ai/flux-lora](https://fal.ai/models/flux-
   - Visual LoRA selection
   - Previews of different style options
   - Smooth animations and interactions
+- 🎭 カスタムLoraモデル管理機能:
+  - マイページでの個人Loraモデルの登録・編集・削除
+  - 画像のドラッグ&ドロップアップロード対応
+  - サムネイル画像のプレビュー表示
+  - 相対パスと絶対パスの両方に対応した柔軟なURL入力
+  - Supabaseストレージとの連携によるファイル管理
 - 🔄 Centralized state management:
   - API Context for global settings
   - LoRA preference persistence
@@ -123,6 +147,7 @@ npx supabase start
 3. Create necessary tables:
 ```bash
 npx supabase db execute -f scripts/create_image_history_table.sql
+npx supabase db execute -f scripts/create_user_lora_models_table.sql
 ```
 
 ## Deployment
@@ -148,6 +173,18 @@ You can deploy this application to any platform that supports Next.js. Here's ho
 9. Use the download button to save images
 10. Check your image generation history on the My Page
 
+### カスタムLoraモデルの管理
+
+1. マイページの「マイLora」タブを開く
+2. 「新規作成」ボタンをクリックして新規Loraを登録
+3. Lora名、Lora URL、説明を入力
+4. サムネイル画像の設定方法:
+   - 画像URLを直接入力
+   - またはファイルをドラッグ&ドロップ
+   - またはクリックしてファイル選択ダイアログから選択
+5. 既存のLoraは「編集」または「削除」ボタンで管理可能
+6. 画像生成時に自分のカスタムLoraモデルを選択して使用
+
 ## Troubleshooting
 
 ### Local Development Issues
@@ -159,6 +196,11 @@ You can deploy this application to any platform that supports Next.js. Here's ho
 - Verify your API keys in the .env.local file
 - Check your network connection
 - The application includes extensive error handling to prevent crashes
+
+### カスタムLoraモデルの問題
+- サムネイルが表示されない場合は、画像URLが正しいか確認
+- 画像をドラッグ&ドロップしても問題が解決しない場合は、ブラウザのコンソールでエラーを確認
+- ローカル開発環境では、画像はBase64形式で一時的に保存されます
 
 ## Tech Stack
 

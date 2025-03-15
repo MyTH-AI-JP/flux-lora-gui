@@ -83,7 +83,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja" suppressHydrationWarning>
+    <html lang="ja" className="dark" suppressHydrationWarning>
       <head>
         <link 
           rel="stylesheet" 
@@ -92,8 +92,8 @@ export default function RootLayout({
       </head>
       <body className={clsx(
         notoSerifJP.className,
-        'bg-[#060606] text-gray-200 dark:text-gray-100'
-      )} suppressHydrationWarning>
+        'bg-[#060606] text-gray-200 dark:text-gray-100 transition-colors duration-200'
+      )}>
         <ThemeProvider>
           <LanguageProvider>
             <ApiProvider>

@@ -73,6 +73,21 @@ export const translations = {
       locale: 'ja-JP'
     },
     themeToggle: 'ダークモード切り替え',
+    carousel: {
+      autoRotateOn: '自動回転: ON',
+      autoRotateOff: '自動回転: OFF',
+      loadingModels: 'モデルを読み込み中...',
+      noModelsAvailable: '表示できるモデルがありません',
+      useThisLora: 'このLoraを使用する'
+    },
+    myLora: {
+      title: 'マイLora',
+      create: '新規作成',
+      noLorasFound: '登録されたLoraがありません',
+      edit: '編集',
+      delete: '削除',
+      creator: '作者'
+    }
   },
   en: {
     title: 'GOA',
@@ -130,6 +145,21 @@ export const translations = {
       locale: 'en-US'
     },
     themeToggle: 'Toggle dark mode',
+    carousel: {
+      autoRotateOn: 'Auto Rotation: ON',
+      autoRotateOff: 'Auto Rotation: OFF',
+      loadingModels: 'Loading models...',
+      noModelsAvailable: 'No models available',
+      useThisLora: 'Use This Lora'
+    },
+    myLora: {
+      title: 'My Lora',
+      create: 'Create New',
+      noLorasFound: 'No Lora models found',
+      edit: 'Edit',
+      delete: 'Delete',
+      creator: 'Creator'
+    }
   },
   fr: {
     title: 'FLUX.1 Générateur d\'Images',
@@ -185,6 +215,21 @@ export const translations = {
       locale: 'fr-FR'
     },
     themeToggle: 'Basculer le mode sombre',
+    carousel: {
+      autoRotateOn: 'Rotation Auto: ON',
+      autoRotateOff: 'Rotation Auto: OFF',
+      loadingModels: 'Chargement des modèles...',
+      noModelsAvailable: 'Aucun modèle disponible',
+      useThisLora: 'Utiliser Ce Lora'
+    },
+    myLora: {
+      title: 'Mes Lora',
+      create: 'Créer Nouveau',
+      noLorasFound: 'Aucun modèle Lora trouvé',
+      edit: 'Modifier',
+      delete: 'Supprimer',
+      creator: 'Créateur'
+    }
   },
   es: {
     title: 'FLUX.1 Generador de Imágenes',
@@ -240,6 +285,21 @@ export const translations = {
       locale: 'es-ES'
     },
     themeToggle: 'Cambiar modo oscuro',
+    carousel: {
+      autoRotateOn: 'Auto Rotation: ON',
+      autoRotateOff: 'Auto Rotation: OFF',
+      loadingModels: 'Loading models...',
+      noModelsAvailable: 'No models available',
+      useThisLora: 'Use This Lora'
+    },
+    myLora: {
+      title: 'Mi Lora',
+      create: 'Create New',
+      noLorasFound: 'No Lora models found',
+      edit: 'Edit',
+      delete: 'Delete',
+      creator: 'Creator'
+    }
   },
   'zh-Hant': {
     title: 'GOA',
@@ -297,6 +357,21 @@ export const translations = {
       locale: 'zh-TW'
     },
     themeToggle: '切換深色模式',
+    carousel: {
+      autoRotateOn: 'Auto Rotation: ON',
+      autoRotateOff: 'Auto Rotation: OFF',
+      loadingModels: 'Loading models...',
+      noModelsAvailable: 'No models available',
+      useThisLora: 'Use This Lora'
+    },
+    myLora: {
+      title: 'My Lora',
+      create: 'Create New',
+      noLorasFound: 'No Lora models found',
+      edit: 'Edit',
+      delete: 'Delete',
+      creator: 'Creator'
+    }
   },
   ko: {
     title: 'GOA',
@@ -353,6 +428,21 @@ export const translations = {
       locale: 'ko-KR'
     },
     themeToggle: '다크 모드 전환',
+    carousel: {
+      autoRotateOn: 'Auto Rotation: ON',
+      autoRotateOff: 'Auto Rotation: OFF',
+      loadingModels: 'Loading models...',
+      noModelsAvailable: 'No models available',
+      useThisLora: 'Use This Lora'
+    },
+    myLora: {
+      title: 'My Lora',
+      create: 'Create New',
+      noLorasFound: 'No Lora models found',
+      edit: 'Edit',
+      delete: 'Delete',
+      creator: 'Creator'
+    }
   },
   it: {
     title: 'GOA',
@@ -410,6 +500,21 @@ export const translations = {
       locale: 'it-IT'
     },
     themeToggle: 'Attiva/disattiva modalità scura',
+    carousel: {
+      autoRotateOn: 'Auto Rotation: ON',
+      autoRotateOff: 'Auto Rotation: OFF',
+      loadingModels: 'Loading models...',
+      noModelsAvailable: 'No models available',
+      useThisLora: 'Use This Lora'
+    },
+    myLora: {
+      title: 'My Lora',
+      create: 'Create New',
+      noLorasFound: 'No Lora models found',
+      edit: 'Edit',
+      delete: 'Delete',
+      creator: 'Creator'
+    }
   },
   de: {
     title: 'GOA',
@@ -467,6 +572,21 @@ export const translations = {
       locale: 'de-DE'
     },
     themeToggle: 'Dunkelmodus umschalten',
+    carousel: {
+      autoRotateOn: 'Auto Rotation: ON',
+      autoRotateOff: 'Auto Rotation: OFF',
+      loadingModels: 'Loading models...',
+      noModelsAvailable: 'No models available',
+      useThisLora: 'Use This Lora'
+    },
+    myLora: {
+      title: 'My Lora',
+      create: 'Create New',
+      noLorasFound: 'No Lora models found',
+      edit: 'Edit',
+      delete: 'Delete',
+      creator: 'Creator'
+    }
   },
   ar: {
     title: 'FLUX.1 مولد الصور',
@@ -523,6 +643,21 @@ export const translations = {
       locale: 'ar-SA'
     },
     themeToggle: 'تبديل الوضع المظلم',
+    carousel: {
+      autoRotateOn: 'Auto Rotation: ON',
+      autoRotateOff: 'Auto Rotation: OFF',
+      loadingModels: 'Loading models...',
+      noModelsAvailable: 'No models available',
+      useThisLora: 'Use This Lora'
+    },
+    myLora: {
+      title: 'My Lora',
+      create: 'Create New',
+      noLorasFound: 'No Lora models found',
+      edit: 'Edit',
+      delete: 'Delete',
+      creator: 'Creator'
+    }
   },
   he: {
     title: 'FLUX.1 מחולל תמונות',
@@ -579,6 +714,21 @@ export const translations = {
       locale: 'he-IL'
     },
     themeToggle: 'החלף מצב כהה',
+    carousel: {
+      autoRotateOn: 'Auto Rotation: ON',
+      autoRotateOff: 'Auto Rotation: OFF',
+      loadingModels: 'Loading models...',
+      noModelsAvailable: 'No models available',
+      useThisLora: 'Use This Lora'
+    },
+    myLora: {
+      title: 'My Lora',
+      create: 'Create New',
+      noLorasFound: 'No Lora models found',
+      edit: 'Edit',
+      delete: 'Delete',
+      creator: 'Creator'
+    }
   },
   hi: {
     title: 'FLUX.1 छवि जनरेटर',
@@ -635,6 +785,21 @@ export const translations = {
       locale: 'hi-IN'
     },
     themeToggle: 'डार्क मोड टॉगल करें',
+    carousel: {
+      autoRotateOn: 'Auto Rotation: ON',
+      autoRotateOff: 'Auto Rotation: OFF',
+      loadingModels: 'Loading models...',
+      noModelsAvailable: 'No models available',
+      useThisLora: 'Use This Lora'
+    },
+    myLora: {
+      title: 'My Lora',
+      create: 'Create New',
+      noLorasFound: 'No Lora models found',
+      edit: 'Edit',
+      delete: 'Delete',
+      creator: 'Creator'
+    }
   },
   pt: {
     title: 'FLUX.1 Gerador de Imagens',
@@ -691,6 +856,21 @@ export const translations = {
       locale: 'pt-BR'
     },
     themeToggle: 'Alternar modo escuro',
+    carousel: {
+      autoRotateOn: 'Auto Rotation: ON',
+      autoRotateOff: 'Auto Rotation: OFF',
+      loadingModels: 'Loading models...',
+      noModelsAvailable: 'No models available',
+      useThisLora: 'Use This Lora'
+    },
+    myLora: {
+      title: 'My Lora',
+      create: 'Create New',
+      noLorasFound: 'No Lora models found',
+      edit: 'Edit',
+      delete: 'Delete',
+      creator: 'Creator'
+    }
   },
   sw: {
     title: 'FLUX.1 Kizalishaji Picha',
@@ -747,6 +927,21 @@ export const translations = {
       locale: 'sw-KE'
     },
     themeToggle: 'Badili hali ya giza',
+    carousel: {
+      autoRotateOn: 'Auto Rotation: ON',
+      autoRotateOff: 'Auto Rotation: OFF',
+      loadingModels: 'Loading models...',
+      noModelsAvailable: 'No models available',
+      useThisLora: 'Use This Lora'
+    },
+    myLora: {
+      title: 'My Lora',
+      create: 'Create New',
+      noLorasFound: 'No Lora models found',
+      edit: 'Edit',
+      delete: 'Delete',
+      creator: 'Creator'
+    }
   }
 } as const;
 

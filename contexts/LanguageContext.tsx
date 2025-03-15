@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Language, translations, TranslationKey } from '../translations';
 
 interface LanguageContextType {
@@ -12,7 +12,21 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>('ja');
+  const [language, setLanguageState] = useState<Language>('ja');
+  
+  // コンポーネントがマウントされたときにlocalStorageから言語設定を読み込む
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language') as Language;
+    if (savedLanguage && Object.keys(translations).includes(savedLanguage)) {
+      setLanguageState(savedLanguage);
+    }
+  }, []);
+  
+  // 言語設定を変更し、localStorageに保存する関数
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem('language', lang);
+  };
 
   const t = (key: string): string => {
     const keys = key.split('.');

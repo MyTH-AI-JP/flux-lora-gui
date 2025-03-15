@@ -12,27 +12,44 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setTheme] = useState<Theme>('dark');
 
   useEffect(() => {
-    // Check local storage or system preference on mount
     const savedTheme = localStorage.getItem('theme') as Theme;
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    } else if (systemPrefersDark) {
-      setTheme('dark');
-      document.documentElement.classList.add('dark');
+    let initialTheme: Theme;
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      initialTheme = savedTheme;
+    } else {
+      initialTheme = systemPrefersDark ? 'dark' : 'light';
     }
+    
+    setTheme(initialTheme);
+    
+    if (initialTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    console.log(`Theme initialized: ${initialTheme}, dark class: ${document.documentElement.classList.contains('dark')}`);
   }, []);
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    console.log(`Theme changed to: ${theme}, dark class: ${document.documentElement.classList.contains('dark')}`);
+  }, [theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
-    document.documentElement.classList.toggle('dark');
   };
 
   return (

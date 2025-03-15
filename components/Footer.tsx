@@ -16,7 +16,7 @@ export function Footer() {
             rel="noopener noreferrer"
             className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
           >
-            {t('footer.copyright')}
+            © 2025 MyTH株式会社 All Rights Reserved.
           </a>
         </div>
         <div className="mt-2 sm:mt-0">
