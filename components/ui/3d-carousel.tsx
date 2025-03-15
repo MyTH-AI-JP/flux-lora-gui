@@ -169,67 +169,8 @@ function ThreeDPhotoCarousel() {
   useEffect(() => {
     async function loadLoraModels() {
       try {
-        // 現在の画像を追加した一時的なデータ（実際の実装ではSupabaseからデータを取得）
-        const models = [
-          {
-            id: "portrait-asian",
-            name: "アジアンビューティー",
-            image_url: "/images/asian-portrait.jpg", // 正しいパスに修正
-            author: "ポートレート専門家",
-            description: "アジアの自然な美しさを引き出すスタイルを適用するLora",
-            lora_url: "https://storage.googleapis.com/fal-flux-lora/a82719e8f8d845d4b08d792ec3e054d8_pytorch_lora_weights.safetensors",
-            created_at: new Date().toISOString()
-          },
-          {
-            id: "asian-beauty",
-            name: "自然な美しさ",
-            image_url: "/images/asian-beauty.jpg",
-            author: "ポートレートアーティスト",
-            description: "自然な雰囲気と美しさを引き出すポートレートスタイル",
-            lora_url: "https://v3.fal.media/files/koala/nTFVc1MiTbCieg6-FibkM_pytorch_lora_weights.safetensors",
-            created_at: new Date().toISOString()
-          },
-          {
-            id: "sakura-style",
-            name: "桜スタイル",
-            image_url: "/images/sakura.jpg",
-            author: "日本風景アーティスト",
-            description: "美しい桜の風景や和風のテイストを強調するLoraモデル",
-            lora_url: "https://v3.fal.media/files/zebra/jCKae-M1MGClNffKuxVJl_pytorch_lora_weights.safetensors",
-            created_at: new Date().toISOString()
-          },
-          {
-            id: "anime-style",
-            name: "アニメスタイル",
-            image_url: "/images/anime.jpg",
-            author: "アニメ作家",
-            description: "アニメ風のスタイルを適用するLora",
-            lora_url: "https://storage.googleapis.com/fal-flux-lora/anime-style-lora.safetensors",
-            created_at: new Date().toISOString()
-          },
-          {
-            id: "watercolor",
-            name: "水彩画風",
-            image_url: "/images/watercolor.jpg",
-            author: "水彩アーティスト",
-            description: "水彩画風のスタイルを適用するLora",
-            lora_url: "https://storage.googleapis.com/fal-flux-lora/watercolor-style-lora.safetensors",
-            created_at: new Date().toISOString()
-          },
-          {
-            id: "monochrome",
-            name: "モノクロ",
-            image_url: "/images/monochrome.jpg",
-            author: "モノクロアーティスト",
-            description: "モノクロスタイルを適用するLora",
-            lora_url: "https://storage.googleapis.com/fal-flux-lora/monochrome-style-lora.safetensors",
-            created_at: new Date().toISOString()
-          }
-        ];
-        
-        // 本番では以下のようにSupabaseからデータを取得
-        // const models = await getLoraModels();
-        
+        // Supabaseからデータを取得
+        const models = await getLoraModels();
         setCards(models);
         console.log("Lora models loaded:", models);
       } catch (error) {
