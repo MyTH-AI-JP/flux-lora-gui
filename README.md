@@ -38,6 +38,18 @@ A minimal and alternative GUI for [fal.ai/flux-lora](https://fal.ai/models/flux-
   - Inference steps
   - Guidance scale
   - LoRA scale adjustment
+- 👤 User settings management:
+  - Personal My Page for user preferences
+  - API key management system
+  - Save and reuse API keys securely
+- 🌠 Interactive 3D Carousel:
+  - Visual LoRA selection
+  - Previews of different style options
+  - Smooth animations and interactions
+- 🔄 Centralized state management:
+  - API Context for global settings
+  - LoRA preference persistence
+  - Dark/light mode toggle
 
 ## Prerequisites
 
@@ -86,14 +98,15 @@ You can deploy this application to any platform that supports Next.js. Here's ho
 
 ## Usage
 
-1. Enter your fal.ai API key
-2. Input your desired prompt
-3. Select image size and adjust parameters
-4. Add your LoRA URL and adjust scale
-5. Choose number of images to generate
-6. Click "Generate" and wait for results
-7. Click images to view larger
-8. Use the download button to save images
+1. Set up your API key on the My Page
+2. Browse and select a LoRA model from the 3D carousel
+3. Input your desired prompt
+4. Select image size and adjust parameters
+5. Adjust LoRA scale if needed
+6. Choose number of images to generate
+7. Click "Generate" and wait for results
+8. Click images to view larger
+9. Use the download button to save images
 
 ## Tech Stack
 
@@ -102,6 +115,7 @@ You can deploy this application to any platform that supports Next.js. Here's ho
 - TypeScript
 - Tailwind CSS
 - fal.ai API
+- Supabase (for storage)
 
 ## License
 
