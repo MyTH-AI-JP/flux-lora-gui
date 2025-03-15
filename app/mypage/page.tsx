@@ -297,7 +297,7 @@ export default function MyPage() {
       
       <div className="relative z-10 max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white">マイページ</h1>
+          <h1 className="text-3xl font-bold text-white">{t('myPage')}</h1>
           <a 
             href="/" 
             className="flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg shadow-md transition-all duration-300"
@@ -305,7 +305,7 @@ export default function MyPage() {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
-            ホームに戻る
+            {t('backToHome', 'ホームに戻る')}
           </a>
         </div>
         
