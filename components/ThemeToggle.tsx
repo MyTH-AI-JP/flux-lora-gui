@@ -1,12 +1,27 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
   const { t } = useLanguage();
+  const [mounted, setMounted] = useState(false);
+
+  // クライアントサイドでマウントされたことを確認
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // マウントされていない場合はプレースホルダーを表示
+  if (!mounted) {
+    return (
+      <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-card transition-colors">
+        <div className="w-5 h-5" />
+      </button>
+    );
+  }
 
   return (
     <button

@@ -89,6 +89,24 @@ export default function RootLayout({
           rel="stylesheet" 
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const savedTheme = localStorage.getItem('theme');
+                  if (savedTheme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                  } else if (savedTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch (e) {
+                  console.error('Theme initialization error:', e);
+                }
+              })();
+            `
+          }}
+        />
       </head>
       <body className={clsx(
         notoSerifJP.className,

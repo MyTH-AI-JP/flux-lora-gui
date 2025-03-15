@@ -13,8 +13,12 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark');
+  const [mounted, setMounted] = useState(false);
 
+  // クライアントサイドでマウントされたことを確認
   useEffect(() => {
+    setMounted(true);
+    
     const savedTheme = localStorage.getItem('theme') as Theme;
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
@@ -37,6 +41,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // マウントされていない場合は何もしない
+    if (!mounted) return;
+    
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -44,9 +51,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
     
     console.log(`Theme changed to: ${theme}, dark class: ${document.documentElement.classList.contains('dark')}`);
-  }, [theme]);
+  }, [theme, mounted]);
 
   const toggleTheme = () => {
+    // マウントされていない場合は何もしない
+    if (!mounted) return;
+    
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
