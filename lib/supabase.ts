@@ -185,6 +185,12 @@ export async function deleteImageFromSupabase(url: string): Promise<boolean> {
  */
 export async function getUserImageHistory(userId: string): Promise<HistoryItem[]> {
   try {
+    // ローカル開発環境ではモックデータを返す（テーブルが存在しない場合の対応）
+    if (supabaseUrl.includes('localhost')) {
+      console.log('開発環境では履歴データをモックしています');
+      return getSampleImageHistory(userId);
+    }
+
     // Supabaseの設定が正しく行われているか確認
     if (!supabaseUrl || supabaseUrl === 'https://your-project-url.supabase.co' || 
         !supabaseKey || supabaseKey === 'your-anon-key') {
@@ -199,8 +205,13 @@ export async function getUserImageHistory(userId: string): Promise<HistoryItem[]
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error(`Error fetching image history for user ${userId}:`, error);
-      // テーブルが存在しない場合や他のエラーの場合はサンプルデータを返す
+      // テーブルがない場合など特定のエラーコードを処理
+      if (error.code === '42P01' || error.message?.includes('does not exist')) {
+        console.warn('The image_history table does not exist. Please create it using the SQL script provided.');
+      } else {
+        console.error(`Error fetching image history for user ${userId}:`, error);
+      }
+      // エラー時にはモックデータを返す
       return getSampleImageHistory(userId);
     }
 

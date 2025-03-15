@@ -50,12 +50,25 @@ A minimal and alternative GUI for [fal.ai/flux-lora](https://fal.ai/models/flux-
   - API Context for global settings
   - LoRA preference persistence
   - Dark/light mode toggle
+- 📊 ユーザー画像生成履歴:
+  - 生成した画像の履歴をマイページで表示
+  - プロンプトやステータスの記録
+  - ローカル開発でもモックデータでテスト可能
+- 🧰 堅牢なエラーハンドリング:
+  - Supabase接続エラーの適切な処理
+  - 開発環境とプロダクション環境の区別
+  - テーブル不存在時の自動フォールバック機能
+- 🔧 フレキシブルなローカル開発環境:
+  - ローカルSupabaseとの連携
+  - 本番環境と同等の開発体験
+  - テーブル作成スクリプトによる簡単セットアップ
 
 ## Prerequisites
 
 - Node.js 18+ 
 - npm or yarn
 - [fal.ai](https://fal.ai) account and API key
+- Supabase (for local development, optional)
 
 ## Installation
 
@@ -74,7 +87,14 @@ yarn install
 
 3. Create a `.env.local` file in the root directory:
 ```env
+# For production
 NEXT_PUBLIC_FAL_KEY=your_fal_ai_key_here
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# For local development
+# NEXT_PUBLIC_SUPABASE_URL="http://localhost:54321"
+# NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0"
 ```
 
 4. Run the development server:
@@ -85,6 +105,25 @@ yarn dev
 ```
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Local Supabase Setup (Optional)
+
+If you want to test the full functionality with user history:
+
+1. Install Supabase CLI:
+```bash
+npm install -g supabase
+```
+
+2. Start local Supabase:
+```bash
+npx supabase start
+```
+
+3. Create necessary tables:
+```bash
+npx supabase db execute -f scripts/create_image_history_table.sql
+```
 
 ## Deployment
 
@@ -107,6 +146,19 @@ You can deploy this application to any platform that supports Next.js. Here's ho
 7. Click "Generate" and wait for results
 8. Click images to view larger
 9. Use the download button to save images
+10. Check your image generation history on the My Page
+
+## Troubleshooting
+
+### Local Development Issues
+- If you see errors about image history, ensure your local Supabase instance is running
+- Run the database scripts to create the required tables
+- The application will fall back to mock data if tables don't exist
+
+### API Connection Issues
+- Verify your API keys in the .env.local file
+- Check your network connection
+- The application includes extensive error handling to prevent crashes
 
 ## Tech Stack
 
@@ -115,7 +167,8 @@ You can deploy this application to any platform that supports Next.js. Here's ho
 - TypeScript
 - Tailwind CSS
 - fal.ai API
-- Supabase (for storage)
+- Supabase (for storage and user data)
+- Three.js (for 3D carousel)
 
 ## License
 
