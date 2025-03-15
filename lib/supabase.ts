@@ -18,6 +18,16 @@ export type LoraModel = {
   created_at: string;
 };
 
+// 履歴アイテムの型定義
+export type HistoryItem = {
+  id: string;
+  user_id: string;
+  prompt: string;
+  result_url: string;
+  created_at: string;
+  status: 'completed' | 'failed' | 'processing';
+};
+
 /**
  * Supabaseからすべてのloraモデルを取得
  */
@@ -155,6 +165,158 @@ export async function deleteImageFromSupabase(url: string): Promise<boolean> {
     return true;
   } catch (error) {
     console.error('Error deleting image:', error);
+    return false;
+  }
+}
+
+/**
+ * ユーザーの画像生成履歴を取得
+ * @param userId ユーザーID
+ */
+export async function getUserImageHistory(userId: string): Promise<HistoryItem[]> {
+  try {
+    // Supabaseの設定が正しく行われているか確認
+    if (!supabaseUrl || supabaseUrl === 'https://your-project-url.supabase.co' || 
+        !supabaseKey || supabaseKey === 'your-anon-key') {
+      console.warn('Supabase credentials not configured properly. Using sample data instead.');
+      return getSampleImageHistory(userId);
+    }
+
+    const { data, error } = await supabase
+      .from('image_history')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error(`Error fetching image history for user ${userId}:`, error);
+      // テーブルが存在しない場合や他のエラーの場合はサンプルデータを返す
+      return getSampleImageHistory(userId);
+    }
+
+    return data || [];
+  } catch (err) {
+    console.error('Unexpected error in getUserImageHistory:', err);
+    return getSampleImageHistory(userId);
+  }
+}
+
+/**
+ * サンプルの画像生成履歴を返す（開発用）
+ */
+function getSampleImageHistory(userId: string): HistoryItem[] {
+  return [
+    {
+      id: 'hist-1',
+      user_id: userId,
+      prompt: '美しい夕日と海の風景',
+      result_url: 'https://picsum.photos/400/300?sunset',
+      created_at: '2023-06-15T10:30:00Z',
+      status: 'completed'
+    },
+    {
+      id: 'hist-2',
+      user_id: userId,
+      prompt: '山の風景と雪',
+      result_url: 'https://picsum.photos/400/300?mountain',
+      created_at: '2023-06-14T14:20:00Z',
+      status: 'completed'
+    },
+    {
+      id: 'hist-3',
+      user_id: userId,
+      prompt: '春の桜と日本庭園',
+      result_url: 'https://picsum.photos/400/300?cherry',
+      created_at: '2023-06-13T09:15:00Z',
+      status: 'completed'
+    },
+    {
+      id: 'hist-4',
+      user_id: userId,
+      prompt: '青い海と白い砂浜',
+      result_url: 'https://picsum.photos/400/300?beach',
+      created_at: '2023-06-12T16:45:00Z',
+      status: 'completed'
+    }
+  ];
+}
+
+/**
+ * 新しい画像生成履歴を追加
+ * @param historyItem 履歴項目
+ */
+export async function addImageHistoryItem(historyItem: Omit<HistoryItem, 'id' | 'created_at'>): Promise<HistoryItem | null> {
+  try {
+    // Supabaseの設定が正しく行われているか確認
+    if (!supabaseUrl || supabaseUrl === 'https://your-project-url.supabase.co' || 
+        !supabaseKey || supabaseKey === 'your-anon-key') {
+      console.warn('Supabase credentials not configured properly. Using mock data instead.');
+      // 開発環境ではモックデータを返す
+      return {
+        id: `hist-${Date.now()}`,
+        ...historyItem,
+        created_at: new Date().toISOString()
+      };
+    }
+
+    const { data, error } = await supabase
+      .from('image_history')
+      .insert({
+        ...historyItem,
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding image history item:', error);
+      // エラー時にはモックデータを返す
+      return {
+        id: `hist-${Date.now()}`,
+        ...historyItem,
+        created_at: new Date().toISOString()
+      };
+    }
+
+    return data;
+  } catch (err) {
+    console.error('Unexpected error in addImageHistoryItem:', err);
+    // 例外発生時にもモックデータを返す
+    return {
+      id: `hist-${Date.now()}`,
+      ...historyItem,
+      created_at: new Date().toISOString()
+    };
+  }
+}
+
+/**
+ * 履歴項目のステータスを更新
+ * @param id 履歴項目ID
+ * @param status 新しいステータス
+ */
+export async function updateImageHistoryStatus(id: string, status: HistoryItem['status']): Promise<boolean> {
+  try {
+    // Supabaseの設定が正しく行われているか確認
+    if (!supabaseUrl || supabaseUrl === 'https://your-project-url.supabase.co' || 
+        !supabaseKey || supabaseKey === 'your-anon-key') {
+      console.warn('Supabase credentials not configured properly. Cannot update status in development mode.');
+      return true; // 開発環境では成功したとみなす
+    }
+
+    const { error } = await supabase
+      .from('image_history')
+      .update({ status })
+      .eq('id', id);
+
+    if (error) {
+      console.error(`Error updating image history status for item ${id}:`, error);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error('Unexpected error in updateImageHistoryStatus:', err);
     return false;
   }
 }

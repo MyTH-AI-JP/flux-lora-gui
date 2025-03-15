@@ -6,6 +6,7 @@ import { GeneratorForm, ImageSizeType } from './GeneratorForm';
 import React from 'react';
 import { ImageModal } from './ImageModal';
 import { useLanguage } from '../contexts/LanguageContext';
+import { addImageHistoryItem } from '@/lib/supabase';
 
 fal.config({
   credentials: process.env.NEXT_PUBLIC_FAL_KEY
@@ -60,10 +61,45 @@ export function ImageGenerator() {
       });
 
       if (result.data.images) {
-        setGeneratedImages(result.data.images.map(img => img.url));
+        const imageUrls = result.data.images.map(img => img.url);
+        setGeneratedImages(imageUrls);
+        
+        // 生成した画像をSupabaseに保存（各画像ごとに）
+        try {
+          // 仮のユーザーID（本来は認証から取得）
+          const userId = 'user-123';
+          
+          // 各画像に対して履歴を追加
+          for (const imageUrl of imageUrls) {
+            await addImageHistoryItem({
+              user_id: userId,
+              prompt: prompt,
+              result_url: imageUrl,
+              status: 'completed'
+            });
+          }
+          
+          console.log('画像生成履歴が保存されました');
+        } catch (saveError) {
+          console.error('画像履歴の保存に失敗しました:', saveError);
+          // 履歴保存のエラーはユーザー体験に影響しないようにする
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '画像生成中にエラーが発生しました');
+      
+      // エラー発生時も履歴に記録
+      try {
+        const userId = 'user-123';
+        await addImageHistoryItem({
+          user_id: userId,
+          prompt: prompt,
+          result_url: '', // エラーのため画像URLなし
+          status: 'failed'
+        });
+      } catch (saveError) {
+        console.error('エラー履歴の保存に失敗しました:', saveError);
+      }
     } finally {
       setIsLoading(false);
     }

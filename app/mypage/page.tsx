@@ -6,6 +6,7 @@ import { useApi } from '@/contexts/ApiContext';
 import { Squares } from '@/components/ui/squares-background';
 import { ButtonColorful } from '@/components/ui/button-colorful';
 import { Check, Copy, Save } from 'lucide-react';
+import { getUserImageHistory, HistoryItem as SupabaseHistoryItem, getUserLoraModels, LoraModel } from '@/lib/supabase';
 
 interface UserProfile {
   id: string;
@@ -17,20 +18,11 @@ interface UserProfile {
   api_key: string | null;
 }
 
-interface HistoryItem {
-  id: string;
-  prompt: string;
-  result_url: string;
-  created_at: string;
-  status: string;
-}
+// HistoryItemをSupabaseHistoryItemを継承するように変更
+interface HistoryItem extends SupabaseHistoryItem {}
 
-interface UserLora {
-  id: string;
-  name: string;
-  image_url: string;
-  created_at: string;
-}
+// UserLoraをLoraModelを継承するように変更
+interface UserLora extends LoraModel {}
 
 export default function MyPage() {
   const { t } = useLanguage();
@@ -55,57 +47,65 @@ export default function MyPage() {
     // 仮のプリセットAPIキーを設定（本来はこういう場所に置くべきではありません）
     const presetApiKey = "5db59d74-127a-4240-a028-2662d88522a4:f7e522e4afbf3486f03f771446bbfe4b";
     
-    // ダミーデータを設定
-    setTimeout(() => {
-      setProfile({
-        id: 'user-123',
-        email: 'user@example.com',
-        username: 'ユーザー名',
-        avatar_url: 'https://i.pravatar.cc/150?img=3',
-        subscription_tier: 'free',
-        subscription_status: 'active',
-        api_key: apiKey || presetApiKey
-      });
-      
-      setHistory([
-        {
-          id: 'hist-1',
-          prompt: '美しい夕日と海の風景',
-          result_url: 'https://picsum.photos/400/300?sunset',
-          created_at: '2023-06-15T10:30:00Z',
-          status: 'completed'
-        },
-        {
-          id: 'hist-2',
-          prompt: '山の風景と雪',
-          result_url: 'https://picsum.photos/400/300?mountain',
-          created_at: '2023-06-14T14:20:00Z',
-          status: 'completed'
-        }
-      ]);
-      
-      // LoraのURLが選択されていれば追加
-      const loraList = [
-        {
-          id: 'lora-1',
-          name: 'マイアニメスタイル',
-          image_url: 'https://picsum.photos/200/200?anime',
-          created_at: '2023-05-20T09:15:00Z'
-        }
-      ];
-      
-      if (selectedLoraUrl) {
-        loraList.unshift({
-          id: 'custom-portrait',
-          name: 'ポートレートスタイル',
-          image_url: 'https://plus.unsplash.com/premium_photo-1669324357471-e33e71e3f3d8?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3',
-          created_at: new Date().toISOString()
+    // データをロード
+    async function loadUserData() {
+      try {
+        setIsLoading(true);
+        
+        // 仮のユーザーID（本来は認証から取得）
+        const userId = 'user-123';
+        
+        // プロフィールデータの設定
+        setProfile({
+          id: userId,
+          email: 'user@example.com',
+          username: 'ユーザー名',
+          avatar_url: 'https://i.pravatar.cc/150?img=3',
+          subscription_tier: 'free',
+          subscription_status: 'active',
+          api_key: apiKey || presetApiKey
         });
+        
+        // Supabaseから実際の履歴データを取得
+        const historyData = await getUserImageHistory(userId);
+        
+        // データがない場合はサンプルデータを使用
+        if (historyData.length === 0) {
+          setHistory([
+            {
+              id: 'hist-1',
+              user_id: userId,
+              prompt: '美しい夕日と海の風景',
+              result_url: 'https://picsum.photos/400/300?sunset',
+              created_at: '2023-06-15T10:30:00Z',
+              status: 'completed'
+            },
+            {
+              id: 'hist-2',
+              user_id: userId,
+              prompt: '山の風景と雪',
+              result_url: 'https://picsum.photos/400/300?mountain',
+              created_at: '2023-06-14T14:20:00Z',
+              status: 'completed'
+            }
+          ]);
+        } else {
+          setHistory(historyData);
+        }
+        
+        // SupabaseからユーザーのカスタムLoraを取得
+        const loraData = await getUserLoraModels(userId);
+        setLoras(loraData);
+        
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        // エラー処理を追加（UI通知など）
+      } finally {
+        setIsLoading(false);
       }
-      
-      setLoras(loraList);
-      setIsLoading(false);
-    }, 1000);
+    }
+    
+    loadUserData();
   }, [t, apiKey, selectedLoraUrl]);
 
   const formatDate = (dateString: string) => {
