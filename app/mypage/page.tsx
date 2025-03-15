@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useApi } from '@/contexts/ApiContext';
 import { Squares } from '@/components/ui/squares-background';
 import { ButtonColorful } from '@/components/ui/button-colorful';
-import { Check, Copy, Save, Edit, Trash2, Plus } from 'lucide-react';
+import { Check, Copy, Save, Edit, Trash2, Plus, Home } from 'lucide-react';
 import { 
   getUserImageHistory, 
   HistoryItem as SupabaseHistoryItem, 
@@ -243,6 +244,16 @@ export default function MyPage() {
       />
       
       <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* ホームに戻るボタン */}
+        <div className="mb-4">
+          <Link href="/" passHref>
+            <Button variant="outline" className="flex items-center gap-2">
+              <Home className="w-4 h-4" />
+              {t('backToHome')}
+            </Button>
+          </Link>
+        </div>
+        
         {/* タブナビゲーション */}
         <div className="mb-6 border-b border-gray-700 flex">
           <button
@@ -289,9 +300,11 @@ export default function MyPage() {
                   <p className="font-medium">{profile?.subscription_tier === 'free' ? t('freePlan') : profile?.subscription_tier}</p>
                   <p className="text-sm text-gray-400">{t('status')}: {profile?.subscription_status}</p>
                 </div>
-                <ButtonColorful href="/payment" className="text-sm">
-                  {t('changePlan')}
-                </ButtonColorful>
+                <Link href="/payment">
+                  <ButtonColorful className="text-sm">
+                    {t('changePlan')}
+                  </ButtonColorful>
+                </Link>
               </div>
             </div>
             
@@ -428,22 +441,20 @@ export default function MyPage() {
       
       {/* Loraの編集・作成ダイアログ */}
       <LoraDialog 
-        open={isLoraDialogOpen} 
-        onOpenChange={setIsLoraDialogOpen}
-        lora={editingLora}
+        isOpen={isLoraDialogOpen} 
+        onClose={() => setIsLoraDialogOpen(false)}
+        editData={editingLora}
         onSave={handleSaveLora}
       />
       
       {/* Lora削除確認ダイアログ */}
       <DeleteConfirmDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleDeleteLora}
-        title={t('deleteLora')}
-        description={t('deleteLoraConfirm')}
-        lora={deletingLora}
+        loraName={deletingLora?.name || 'このLora'}
       />
       
     </div>
   );
-} 
+}
