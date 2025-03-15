@@ -181,6 +181,15 @@ function ThreeDPhotoCarousel() {
             created_at: new Date().toISOString()
           },
           {
+            id: "sakura-style",
+            name: "桜スタイル",
+            image_url: "/images/sakura.jpg",
+            author: "日本風景アーティスト",
+            description: "美しい桜の風景や和風のテイストを強調するLoraモデル",
+            lora_url: "https://v3.fal.media/files/zebra/jCKae-M1MGClNffKuxVJl_pytorch_lora_weights.safetensors",
+            created_at: new Date().toISOString()
+          },
+          {
             id: "anime-style",
             name: "アニメスタイル",
             image_url: "/images/anime.jpg",
