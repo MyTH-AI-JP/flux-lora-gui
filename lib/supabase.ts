@@ -1,8 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
 // 環境変数からURLとキーを取得
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://your-project-url.supabase.co';
+const rawSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://your-project-url.supabase.co';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'your-anon-key';
+
+// URLが有効かチェック
+let supabaseUrl = 'https://your-project-url.supabase.co';
+try {
+  // URLが正しい形式かチェック
+  new URL(rawSupabaseUrl);
+  supabaseUrl = rawSupabaseUrl;
+} catch (e) {
+  console.warn('Invalid Supabase URL format, using default URL instead', e);
+}
 
 // Supabaseクライアントの作成
 export const supabase = createClient(supabaseUrl, supabaseKey);
@@ -247,16 +257,18 @@ function getSampleImageHistory(userId: string): HistoryItem[] {
  */
 export async function addImageHistoryItem(historyItem: Omit<HistoryItem, 'id' | 'created_at'>): Promise<HistoryItem | null> {
   try {
+    // ローカル開発環境ではモックデータを返す（テーブルが存在しない場合の対応）
+    if (supabaseUrl.includes('localhost')) {
+      console.log('開発環境では履歴データをモックしています');
+      return createMockHistoryItem(historyItem);
+    }
+
     // Supabaseの設定が正しく行われているか確認
     if (!supabaseUrl || supabaseUrl === 'https://your-project-url.supabase.co' || 
         !supabaseKey || supabaseKey === 'your-anon-key') {
       console.warn('Supabase credentials not configured properly. Using mock data instead.');
       // 開発環境ではモックデータを返す
-      return {
-        id: `hist-${Date.now()}`,
-        ...historyItem,
-        created_at: new Date().toISOString()
-      };
+      return createMockHistoryItem(historyItem);
     }
 
     const { data, error } = await supabase
@@ -269,25 +281,33 @@ export async function addImageHistoryItem(historyItem: Omit<HistoryItem, 'id' | 
       .single();
 
     if (error) {
-      console.error('Error adding image history item:', error);
+      // テーブルがない場合など特定のエラーコードを処理
+      if (error.code === '42P01' || error.message?.includes('does not exist')) {
+        console.warn('The image_history table does not exist. Please create it using the SQL script provided.');
+      } else {
+        console.error('Error adding image history item:', error);
+      }
       // エラー時にはモックデータを返す
-      return {
-        id: `hist-${Date.now()}`,
-        ...historyItem,
-        created_at: new Date().toISOString()
-      };
+      return createMockHistoryItem(historyItem);
     }
 
     return data;
   } catch (err) {
     console.error('Unexpected error in addImageHistoryItem:', err);
     // 例外発生時にもモックデータを返す
-    return {
-      id: `hist-${Date.now()}`,
-      ...historyItem,
-      created_at: new Date().toISOString()
-    };
+    return createMockHistoryItem(historyItem);
   }
+}
+
+/**
+ * モック履歴アイテムを作成（開発・エラー時用）
+ */
+function createMockHistoryItem(historyItem: Omit<HistoryItem, 'id' | 'created_at'>): HistoryItem {
+  return {
+    id: `mock-hist-${Date.now()}`,
+    ...historyItem,
+    created_at: new Date().toISOString()
+  };
 }
 
 /**
@@ -345,4 +365,33 @@ export async function getUserLoraModels(userId: string): Promise<LoraModel[]> {
       created_at: new Date().toISOString()
     }
   ];
+}
+
+// ローカルSupabaseサーバーのステータスをチェックする関数
+export async function checkSupabaseConnection(): Promise<{ isConnected: boolean; error?: string }> {
+  try {
+    // 簡単なクエリを実行してみる
+    const { data, error } = await supabase.from('image_history').select('id').limit(1);
+    
+    if (error) {
+      if (error.code === '42P01' || error.message?.includes('does not exist')) {
+        return { 
+          isConnected: false, 
+          error: 'image_historyテーブルが存在しません。スクリプトを実行してテーブルを作成してください。' 
+        };
+      } else {
+        return { 
+          isConnected: false, 
+          error: `Supabase接続エラー: ${error.message}` 
+        };
+      }
+    }
+    
+    return { isConnected: true };
+  } catch (err) {
+    return { 
+      isConnected: false, 
+      error: `予期しないエラー: ${err instanceof Error ? err.message : String(err)}` 
+    };
+  }
 } 
