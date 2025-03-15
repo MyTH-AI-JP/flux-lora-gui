@@ -14,6 +14,11 @@ try {
   console.warn('Invalid Supabase URL format, using default URL instead', e);
 }
 
+// 開発環境かどうかを判定
+const isDevelopment = process.env.NODE_ENV === 'development' || 
+                       supabaseUrl.includes('localhost') || 
+                       supabaseUrl.includes('your-project-url');
+
 // Supabaseクライアントの作成
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -388,6 +393,21 @@ function getSampleImageHistory(userId: string): HistoryItem[] {
  */
 export async function addImageHistoryItem(historyItem: Omit<HistoryItem, 'id' | 'created_at'>): Promise<HistoryItem | null> {
   try {
+    // 開発環境ではモックデータを返す
+    if (isDevelopment || historyItem.user_id.startsWith('user-')) {
+      console.log('開発環境ではSupabaseへの履歴追加をスキップします');
+      
+      // モックの履歴項目を返す
+      return {
+        id: `hist-${Date.now()}`,
+        user_id: historyItem.user_id,
+        prompt: historyItem.prompt,
+        result_url: historyItem.result_url,
+        created_at: new Date().toISOString(),
+        status: historyItem.status
+      };
+    }
+    
     const { data, error } = await supabase
       .from('image_history')
       .insert([historyItem])

@@ -71,15 +71,19 @@ export function ImageGenerator() {
           
           // 各画像に対して履歴を追加
           for (const imageUrl of imageUrls) {
-            await addImageHistoryItem({
+            const savedHistory = await addImageHistoryItem({
               user_id: userId,
               prompt: prompt,
               result_url: imageUrl,
               status: 'completed'
             });
+            
+            if (savedHistory) {
+              console.log('画像生成履歴が保存されました:', savedHistory.id);
+            } else {
+              console.warn('画像履歴の保存が完了しましたが、データが返されませんでした');
+            }
           }
-          
-          console.log('画像生成履歴が保存されました');
         } catch (saveError) {
           console.error('画像履歴の保存に失敗しました:', saveError);
           // 履歴保存のエラーはユーザー体験に影響しないようにする
