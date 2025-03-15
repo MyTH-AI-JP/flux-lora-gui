@@ -2,9 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
   // マウント状態を設定
@@ -19,7 +21,7 @@ export function ThemeToggle() {
       <button 
         disabled
         className="p-2 rounded-lg bg-gray-700/20"
-        aria-label="テーマ切り替え"
+        aria-label={t('themeToggle')}
       >
         <div className="w-5 h-5" />
       </button>
@@ -33,14 +35,29 @@ export function ThemeToggle() {
     e.preventDefault();
     e.stopPropagation();
     console.log('テーマ切り替えボタンがクリックされました');
+    
+    // テーマを切り替え
     toggleTheme();
+    
+    // DOMを直接操作して確実にテーマを切り替える
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    }
+    
+    // ローカルストレージに保存
+    localStorage.setItem('theme', newTheme);
   };
 
   return (
     <button
       onClick={handleClick}
       className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-      aria-label="テーマ切り替え"
+      aria-label={t('themeToggle')}
     >
       {theme === 'light' ? (
         // 月アイコン（ダークモードへ切り替え）

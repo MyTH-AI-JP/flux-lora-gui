@@ -19,14 +19,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
     
-    // ローカルストレージから保存されたテーマを取得
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme === 'light' || savedTheme === 'dark') {
-      setTheme(savedTheme);
-    } else {
-      // システム設定からテーマを取得
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setTheme(prefersDark ? 'dark' : 'light');
+    try {
+      // ローカルストレージから保存されたテーマを取得
+      const savedTheme = localStorage.getItem('theme') as Theme;
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        setTheme(savedTheme);
+        console.log(`ローカルストレージからテーマを読み込みました: ${savedTheme}`);
+      } else {
+        // システム設定からテーマを取得
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const systemTheme = prefersDark ? 'dark' : 'light';
+        setTheme(systemTheme);
+        console.log(`システム設定からテーマを取得しました: ${systemTheme}`);
+      }
+    } catch (error) {
+      console.error('テーマの初期化中にエラーが発生しました:', error);
+      // エラー時はデフォルトのダークテーマを使用
+      setTheme('dark');
     }
   }, []);
 
@@ -34,28 +43,50 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
     
-    // HTML要素にクラスを設定
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-    } else {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
+    try {
+      // HTML要素にクラスを設定
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+      }
+      
+      // ローカルストレージに保存
+      localStorage.setItem('theme', theme);
+      
+      // デバッグ情報
+      console.log(`テーマを変更しました: ${theme}`);
+      console.log(`darkクラスは${document.documentElement.classList.contains('dark') ? '存在します' : '存在しません'}`);
+    } catch (error) {
+      console.error('テーマの適用中にエラーが発生しました:', error);
     }
-    
-    // ローカルストレージに保存
-    localStorage.setItem('theme', theme);
-    
-    // デバッグ情報
-    console.log(`テーマを変更しました: ${theme}`);
-    console.log(`darkクラスは${document.documentElement.classList.contains('dark') ? '存在します' : '存在しません'}`);
   }, [theme, mounted]);
 
   // テーマの切り替え関数
   const toggleTheme = () => {
     if (!mounted) return;
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-    console.log('テーマ切り替えボタンがクリックされました');
+    
+    try {
+      const newTheme = theme === 'light' ? 'dark' : 'light';
+      setTheme(newTheme);
+      console.log(`テーマを切り替えます: ${theme} -> ${newTheme}`);
+      
+      // 即時にDOMを更新（状態更新を待たない）
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+      }
+      
+      // ローカルストレージに即時保存
+      localStorage.setItem('theme', newTheme);
+    } catch (error) {
+      console.error('テーマの切り替え中にエラーが発生しました:', error);
+    }
   };
 
   return (

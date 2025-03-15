@@ -14,14 +14,12 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // ダミーユーザーID（実際の環境では認証済みユーザーIDを使用）
 const userId = 'user-123';
 
-// Sakuraの画像URL
-const sakuraImageURL = 'https://example.com/path/to/jk_sakura.jpg'; // これは実際の画像URLに置き換える必要があります
-
 // 画像ファイルのパス
 const imagePath = path.join(__dirname, '../public/images/jk_sakura.jpg');
 
 // Sakuraのデータ
 const sakuraLora = {
+  id: 'jk-sakura', // 明示的にIDを指定
   name: 'JK Sakura',
   description: '女子高生の桜（さくら）Loraモデル。制服を着た可愛い女子高生のキャラクター。',
   image_url: '/images/jk_sakura.jpg', // publicフォルダ内のパス
@@ -127,31 +125,82 @@ async function main() {
   try {
     console.log('Sakura Loraモデルを追加中...');
 
-    // 画像ファイルを準備
-    let imageFilePath;
-    try {
-      if (sakuraImageURL.startsWith('http')) {
-        imageFilePath = await downloadImage(sakuraImageURL, imagePath);
-      } else {
-        // テスト用の画像を作成
-        imageFilePath = createDemoImage();
-      }
-    } catch (imageError) {
-      console.error('画像の準備中にエラーが発生しました:', imageError);
-      imageFilePath = createDemoImage(); // エラー時はデモ画像を使用
+    // 画像ファイルの存在確認
+    if (fs.existsSync(imagePath)) {
+      console.log(`画像ファイルが存在します: ${imagePath}`);
+    } else {
+      console.error(`画像ファイルが見つかりません: ${imagePath}`);
+      return;
     }
 
-    console.log(`画像ファイルのパス: ${imageFilePath}`);
+    // モックデータにも追加
+    try {
+      const mockDataPath = path.join(__dirname, '../lib/supabase.ts');
+      if (fs.existsSync(mockDataPath)) {
+        console.log('モックデータファイルを更新します...');
+        let mockData = fs.readFileSync(mockDataPath, 'utf8');
+        
+        // モックデータにJK Sakuraが含まれているか確認
+        if (!mockData.includes('jk-sakura')) {
+          // LoraModelsMockにJK Sakuraを追加
+          const loraModelsMockRegex = /export const getLoraModelsMock = \(\) => \{[\s\S]*?return \[([\s\S]*?)\];/;
+          const match = mockData.match(loraModelsMockRegex);
+          
+          if (match && match[1]) {
+            const newModel = `
+    {
+      id: 'jk-sakura',
+      name: 'JK Sakura',
+      image_url: '/images/jk_sakura.jpg',
+      author: 'MyTH AI',
+      description: '女子高生の桜（さくら）Loraモデル。制服を着た可愛い女子高生のキャラクター。',
+      lora_url: 'https://v3.fal.media/files/panda/Lim1EF3ScgEG1RfAooimI_pytorch_lora_weights.safetensors',
+      created_at: new Date().toISOString()
+    },`;
+            
+            const updatedModels = match[1] + newModel;
+            mockData = mockData.replace(match[1], updatedModels);
+            
+            // カルーセルモックデータにも追加
+            const carouselMockRegex = /export const getCarouselModelsMock = \(\) => \{[\s\S]*?return \[([\s\S]*?)\];/;
+            const carouselMatch = mockData.match(carouselMockRegex);
+            
+            if (carouselMatch && carouselMatch[1]) {
+              const newCarouselModel = `
+    {
+      id: '4',
+      lora_id: 'jk-sakura',
+      position: 1,
+      is_active: true,
+      created_at: new Date().toISOString()
+    },`;
+              
+              const updatedCarouselModels = carouselMatch[1] + newCarouselModel;
+              mockData = mockData.replace(carouselMatch[1], updatedCarouselModels);
+              
+              fs.writeFileSync(mockDataPath, mockData);
+              console.log('モックデータを更新しました');
+            }
+          }
+        } else {
+          console.log('JK Sakuraはすでにモックデータに存在します');
+        }
+      }
+    } catch (mockError) {
+      console.error('モックデータの更新中にエラーが発生しました:', mockError);
+    }
 
     // ユーザーLoraモデルを追加
     const { data: loraData, error: loraError } = await supabase
       .from('user_lora_models')
-      .insert([{
+      .upsert([{
+        id: sakuraLora.id,
         user_id: userId,
         name: sakuraLora.name,
         image_url: sakuraLora.image_url,
         description: sakuraLora.description,
         lora_url: sakuraLora.lora_url,
+        author: sakuraLora.author,
         is_public: sakuraLora.is_public
       }])
       .select()
@@ -167,7 +216,7 @@ async function main() {
     // カルーセルモデルに追加
     const { data: carouselData, error: carouselError } = await supabase
       .from('carousel_models')
-      .insert([{
+      .upsert([{
         lora_id: loraData.id,
         position: 1, // 目立つ位置に表示
         is_active: true

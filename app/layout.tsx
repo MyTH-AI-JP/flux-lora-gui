@@ -89,22 +89,28 @@ export default function RootLayout({
           rel="stylesheet" 
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         />
-        {/* テーマの初期化スクリプト - シンプルな実装 */}
+        {/* テーマの初期化スクリプト - 改善版 */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              try {
-                const theme = localStorage.getItem('theme');
-                if (theme === 'light') {
-                  document.documentElement.classList.remove('dark');
-                } else if (theme === 'dark') {
-                  document.documentElement.classList.add('dark');
-                } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-                  document.documentElement.classList.remove('dark');
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme');
+                  if (theme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.classList.add('light');
+                  } else if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.remove('light');
+                  } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.classList.add('light');
+                  }
+                  console.log('テーマ初期化完了:', theme || 'システム設定に基づく');
+                } catch (e) {
+                  console.error('テーマ初期化エラー:', e);
                 }
-              } catch (e) {
-                console.error('テーマ初期化エラー:', e);
-              }
+              })();
             `
           }}
         />

@@ -99,29 +99,63 @@ export default function ThreeDCarousel() {
       
       // モジュールをインポート
       const supabaseLib = await import('@/lib/supabase');
+      console.log('supabaseLib imported:', Object.keys(supabaseLib));
+      
       const { isConnected, error: connectionError } = await supabaseLib.checkSupabaseConnection();
+      console.log('Supabase接続状態:', isConnected, connectionError);
+      
+      // JK Sakuraモデルを作成（必ず表示されるようにする）
+      const jkSakuraModel: LoraModel = {
+        id: 'jk-sakura-forced',
+        name: 'JK Sakura (強制表示)',
+        image_url: '/images/jk_sakura.jpg',
+        author: 'MyTH AI',
+        description: '女子高生の桜（さくら）Loraモデル。制服を着た可愛い女子高生のキャラクター。',
+        lora_url: 'https://v3.fal.media/files/panda/Lim1EF3ScgEG1RfAooimI_pytorch_lora_weights.safetensors',
+        created_at: new Date().toISOString()
+      };
       
       if (!isConnected) {
         console.warn('Supabase connection error:', connectionError);
         console.log('カルーセルにはモックデータを使用します');
         
         // モックデータを使用
-        const mockCarouselModels = supabaseLib.getCarouselModelsMock();
-        const mockLoraModels = supabaseLib.getLoraModelsMock();
+        try {
+          const mockCarouselModels = supabaseLib.getCarouselModelsMock();
+          console.log('mockCarouselModels:', mockCarouselModels);
+          
+          const mockLoraModels = supabaseLib.getLoraModelsMock();
+          console.log('mockLoraModels:', mockLoraModels);
+          
+          // JK Sakuraモデルが存在するか確認
+          const hasJkSakura = mockLoraModels.some(model => model.id === 'jk-sakura');
+          console.log('JK Sakuraモデルが存在するか:', hasJkSakura);
+          
+          // カルーセルモデルにloraModelを追加
+          const enrichedModels = mockCarouselModels.map(cm => ({
+            ...cm,
+            lora_model: mockLoraModels.find(lm => lm.id === cm.lora_id) || jkSakuraModel
+          }));
+          
+          // loraモデル情報を抽出
+          let loraModels = enrichedModels
+            .filter(cm => cm.lora_model) // lora_modelが存在するもののみ
+            .map(cm => cm.lora_model as LoraModel); // lora_modelを抽出
+          
+          // JK Sakuraが含まれていない場合は強制的に追加
+          if (!loraModels.some(model => model.id === 'jk-sakura' || model.id === 'jk-sakura-forced')) {
+            console.log('JK Sakuraモデルを強制的に追加します');
+            loraModels = [jkSakuraModel, ...loraModels];
+          }
+          
+          console.log('カルーセルモデル(モック):', loraModels);
+          setModels(loraModels);
+        } catch (mockError) {
+          console.error('モックデータロード中のエラー:', mockError);
+          // エラー時は少なくともJK Sakuraだけは表示
+          setModels([jkSakuraModel]);
+        }
         
-        // カルーセルモデルにloraModelを追加
-        const enrichedModels = mockCarouselModels.map(cm => ({
-          ...cm,
-          lora_model: mockLoraModels.find(lm => lm.id === cm.lora_id)
-        }));
-        
-        // loraモデル情報を抽出
-        const loraModels = enrichedModels
-          .filter(cm => cm.lora_model) // lora_modelが存在するもののみ
-          .map(cm => cm.lora_model as LoraModel); // lora_modelを抽出
-        
-        console.log('カルーセルモデル(モック):', loraModels);
-        setModels(loraModels);
         setLoading(false);
         return;
       }
@@ -131,9 +165,15 @@ export default function ThreeDCarousel() {
       console.log('取得したカルーセルモデル:', carouselModels);
       
       // カルーセルモデルからLoraモデル情報を抽出
-      const loraModels = carouselModels
+      let loraModels = carouselModels
         .filter(cm => cm.lora_model) // lora_modelが存在するもののみ
         .map(cm => cm.lora_model as LoraModel); // lora_modelを抽出
+      
+      // JK Sakuraが含まれていない場合は強制的に追加
+      if (!loraModels.some(model => model.id === 'jk-sakura' || model.id === 'jk-sakura-forced')) {
+        console.log('JK Sakuraモデルを強制的に追加します');
+        loraModels = [jkSakuraModel, ...loraModels];
+      }
       
       console.log('抽出したLoraモデル:', loraModels);
       setModels(loraModels);
@@ -145,10 +185,41 @@ export default function ThreeDCarousel() {
       try {
         const supabaseLib = await import('@/lib/supabase');
         const mockModels = supabaseLib.getLoraModelsMock();
-        setModels(mockModels);
-        console.log('エラー時のフォールバック - モックデータを使用:', mockModels);
+        
+        // JK Sakuraモデルを作成（必ず表示されるようにする）
+        const jkSakuraModel: LoraModel = {
+          id: 'jk-sakura-forced',
+          name: 'JK Sakura (強制表示)',
+          image_url: '/images/jk_sakura.jpg',
+          author: 'MyTH AI',
+          description: '女子高生の桜（さくら）Loraモデル。制服を着た可愛い女子高生のキャラクター。',
+          lora_url: 'https://v3.fal.media/files/panda/Lim1EF3ScgEG1RfAooimI_pytorch_lora_weights.safetensors',
+          created_at: new Date().toISOString()
+        };
+        
+        // JK Sakuraが含まれていない場合は強制的に追加
+        let models = mockModels;
+        if (!models.some(model => model.id === 'jk-sakura' || model.id === 'jk-sakura-forced')) {
+          console.log('JK Sakuraモデルを強制的に追加します（エラー時）');
+          models = [jkSakuraModel, ...models];
+        }
+        
+        setModels(models);
+        console.log('エラー時のフォールバック - モックデータを使用:', models);
       } catch (mockErr) {
         console.error('モックデータの取得にも失敗:', mockErr);
+        
+        // 最終手段としてJK Sakuraだけは表示
+        const jkSakuraModel: LoraModel = {
+          id: 'jk-sakura-forced',
+          name: 'JK Sakura (最終手段)',
+          image_url: '/images/jk_sakura.jpg',
+          author: 'MyTH AI',
+          description: '女子高生の桜（さくら）Loraモデル。制服を着た可愛い女子高生のキャラクター。',
+          lora_url: 'https://v3.fal.media/files/panda/Lim1EF3ScgEG1RfAooimI_pytorch_lora_weights.safetensors',
+          created_at: new Date().toISOString()
+        };
+        setModels([jkSakuraModel]);
       }
     } finally {
       setLoading(false);
