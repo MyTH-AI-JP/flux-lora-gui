@@ -95,29 +95,61 @@ export default function ThreeDCarousel() {
       setLoading(true);
       
       // Supabase接続状態を確認
-      const { isConnected, error: connectionError } = await import('@/lib/supabase').then(
-        lib => lib.checkSupabaseConnection()
-      );
+      console.log('カルーセルのモデルを読み込み開始');
+      
+      // モジュールをインポート
+      const supabaseLib = await import('@/lib/supabase');
+      const { isConnected, error: connectionError } = await supabaseLib.checkSupabaseConnection();
       
       if (!isConnected) {
-        console.error('Supabase connection error:', connectionError);
-        setError(`Supabaseに接続できません: ${connectionError}`);
+        console.warn('Supabase connection error:', connectionError);
+        console.log('カルーセルにはモックデータを使用します');
+        
+        // モックデータを使用
+        const mockCarouselModels = supabaseLib.getCarouselModelsMock();
+        const mockLoraModels = supabaseLib.getLoraModelsMock();
+        
+        // カルーセルモデルにloraModelを追加
+        const enrichedModels = mockCarouselModels.map(cm => ({
+          ...cm,
+          lora_model: mockLoraModels.find(lm => lm.id === cm.lora_id)
+        }));
+        
+        // loraモデル情報を抽出
+        const loraModels = enrichedModels
+          .filter(cm => cm.lora_model) // lora_modelが存在するもののみ
+          .map(cm => cm.lora_model as LoraModel); // lora_modelを抽出
+        
+        console.log('カルーセルモデル(モック):', loraModels);
+        setModels(loraModels);
         setLoading(false);
         return;
       }
       
       // カルーセルモデルを取得
-      const carouselModels = await getCarouselModels();
+      const carouselModels = await supabaseLib.getCarouselModels();
+      console.log('取得したカルーセルモデル:', carouselModels);
       
       // カルーセルモデルからLoraモデル情報を抽出
       const loraModels = carouselModels
         .filter(cm => cm.lora_model) // lora_modelが存在するもののみ
         .map(cm => cm.lora_model as LoraModel); // lora_modelを抽出
       
+      console.log('抽出したLoraモデル:', loraModels);
       setModels(loraModels);
     } catch (err) {
       console.error('Error loading Lora models:', err);
       setError('モデルの読み込み中にエラーが発生しました');
+      
+      // エラー時にもモックデータを使用
+      try {
+        const supabaseLib = await import('@/lib/supabase');
+        const mockModels = supabaseLib.getLoraModelsMock();
+        setModels(mockModels);
+        console.log('エラー時のフォールバック - モックデータを使用:', mockModels);
+      } catch (mockErr) {
+        console.error('モックデータの取得にも失敗:', mockErr);
+      }
     } finally {
       setLoading(false);
     }

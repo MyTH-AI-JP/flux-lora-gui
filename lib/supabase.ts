@@ -87,7 +87,7 @@ export async function getLoraModels(): Promise<LoraModel[]> {
 /**
  * モックLoraモデルデータを返す
  */
-function getLoraModelsMock(): LoraModel[] {
+export function getLoraModelsMock(): LoraModel[] {
   return [
     {
       id: 'portrait-asian',
@@ -459,7 +459,7 @@ export async function getUserLoraModels(userId: string): Promise<LoraModel[]> {
 /**
  * モックユーザーLoraモデルデータを返す
  */
-function getUserLoraModelsMock(): LoraModel[] {
+export function getUserLoraModelsMock(): LoraModel[] {
   return [
     {
       id: 'jk-sakura',
@@ -525,7 +525,7 @@ export async function getCarouselModels(): Promise<CarouselModel[]> {
 /**
  * モックカルーセルデータを返す
  */
-function getCarouselModelsMock(): CarouselModel[] {
+export function getCarouselModelsMock(): CarouselModel[] {
   return [
     {
       id: '0',
