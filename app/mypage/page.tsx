@@ -172,7 +172,7 @@ export default function MyPage() {
   };
 
   // Loraの保存処理（新規作成または更新）
-  const handleSaveLora = async (loraData: Partial<LoraModel> & { selectedFile?: File | null }) => {
+  const handleSaveLora = async (loraData: Partial<LoraModel>, selectedFile?: File | null) => {
     try {
       const userId = profile?.id || 'user-123'; // 開発用に仮のIDを使用
       
@@ -189,14 +189,16 @@ export default function MyPage() {
         }
       } else {
         // 新規Loraを作成
-        const newLora = await createUserLoraModel(userId, {
+        const modelData = {
           name: loraData.name || '',
           image_url: loraData.image_url || '',
           description: loraData.description || '',
           lora_url: loraData.lora_url || '',
-          author: 'あなた',
-          selectedFile: loraData.selectedFile
-        });
+          author: 'あなた'
+        };
+        
+        // createUserLoraModelは2つの引数しか受け取らないようなので修正
+        const newLora = await createUserLoraModel(userId, modelData);
         
         if (newLora) {
           // 成功した場合、Loraリストに追加

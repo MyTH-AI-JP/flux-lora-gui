@@ -1,24 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Metadata, Viewport } from 'next';
-
-export const generateMetadata = async (): Promise<Metadata> => {
-  return {
-    title: 'API Jobs',
-  };
-};
-
-export function generateViewport(): Viewport {
-  return {
-    width: 'device-width',
-    initialScale: 1,
-  };
-}
 
 export default function APIJobsPage() {
   const { t } = useLanguage();
+  
+  // useEffectでタイトルを設定
+  useEffect(() => {
+    document.title = 'API Jobs';
+  }, []);
   
   return (
     <div className="container mx-auto py-12 px-4">

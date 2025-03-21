@@ -10,7 +10,7 @@ import { Upload, ImageIcon } from 'lucide-react';
 interface LoraDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (loraData: Partial<LoraModel>) => void;
+  onSave: (loraData: Partial<LoraModel>, selectedFile?: File | null) => void;
   editData?: LoraModel | null;
 }
 
@@ -86,15 +86,16 @@ export function LoraDialog({ isOpen, onClose, onSave, editData }: LoraDialogProp
 
   const handleSubmit = () => {
     if (validateForm()) {
-      // 選択された画像がある場合は、その情報を使用
-      // 注意: 実際のアップロード処理はここでは行わず、呼び出し元で処理
-      onSave({
+      // LoraModelに合致するデータオブジェクトを作成
+      const loraData: Partial<LoraModel> = {
         name,
-        image_url: imageUrl, // フォームに入力されたURLを優先
+        image_url: imageUrl,
         description,
-        lora_url: loraUrl,
-        selectedFile: selectedFile // 選択されたファイルも送信
-      });
+        lora_url: loraUrl
+      };
+      
+      // ファイルは別の引数として渡す
+      onSave(loraData, selectedFile);
     }
   };
 

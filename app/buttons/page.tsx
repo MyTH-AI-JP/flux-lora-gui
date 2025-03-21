@@ -1,3 +1,5 @@
+'use client';
+
 import { ButtonDemo } from "@/components/ui/button-demo";
 
 export default function ButtonsPage() {
